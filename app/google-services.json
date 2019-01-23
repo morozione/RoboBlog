@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "566758721581",
+    "firebase_url": "https://roboblog-d8ccb.firebaseio.com",
+    "project_id": "roboblog-d8ccb",
+    "storage_bucket": "roboblog-d8ccb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566758721581:android:8d0c5bddcec05a8e",
+        "android_client_info": {
+          "package_name": "com.morozione.roboblog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566758721581-ltcfqruo0h7n4b9f7t64oojjefff5qfk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.morozione.roboblog",
+            "certificate_hash": "9a19f15592767c1eed3b32cc41da5d17941fc253"
+          }
+        },
+        {
+          "client_id": "566758721581-5r57o7efkihbidrr4h76p7vscgccfqqk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt2zqkLtXFt05qOFwqXUSb5UMdC41J4_I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "566758721581-5r57o7efkihbidrr4h76p7vscgccfqqk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/blogs"
+          android:enabled="true"
+          android:icon="@drawable/ic_home"
+          tools:ignore="MenuTitle"/>
+
+    <item android:id="@+id/user_blogs"
+          android:enabled="true"
+          android:icon="@drawable/ic_list"
+          tools:ignore="MenuTitle"/>
+
+    <item android:id="@+id/create_blog"
+          android:enabled="true"
+          android:icon="@drawable/ic_add"
+          tools:ignore="MenuTitle"/>
+
+    <item android:id="@+id/user"
+          android:enabled="true"
+          android:icon="@drawable/ic_user"
+          tools:ignore="MenuTitle"/>
+</menu>

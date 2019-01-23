@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">RoboBlog</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="something_was_wrong">Something was wrong</string>
+    <string name="saved">Saved</string>
+    <string name="error">Something was wrong</string>
+    <string name="zero">0</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="registration">Registration</string>
+    <string name="name">Name</string>
+    <string name="save">Save</string>
+    <string name="updated">Updated</string>
+</resources>
