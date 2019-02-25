@@ -1,6 +1,5 @@
 package com.morozione.roboblog.ui.fragment
 
-import android.os.Bundle
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.Blog
@@ -13,9 +12,8 @@ class GlobalBlogsFragment : BlogsFragment(), GlobalBlogsView {
     @InjectPresenter
     lateinit var presenter: GlobalBlogsPresenter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        super.setTypeOfList(BlogsAdapter.TypeOfList.GLOBAL)
+    init{
+        typeOfList = BlogsAdapter.TypeOfList.GLOBAL
     }
 
     override fun onStart() {

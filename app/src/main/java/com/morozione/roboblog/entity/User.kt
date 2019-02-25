@@ -1,9 +1,9 @@
 package com.morozione.roboblog.entity
 
-class User {
-    var id: String = ""
-    var email = ""
-    var name = ""
-    var image = ""
-    var rating = 0
-}
+data class User(
+        var id: String = "",
+        var email: String = "",
+        var name: String = "",
+        var image: String = "",
+        var rating: Int = 0
+)

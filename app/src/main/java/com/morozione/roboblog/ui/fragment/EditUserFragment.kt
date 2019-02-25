@@ -13,6 +13,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 
 import com.morozione.roboblog.R
+import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.presenter.EditUserPresenter
 import com.morozione.roboblog.presenter.view.EditUserView
@@ -29,6 +30,11 @@ class EditUserFragment : MvpAppCompatFragment(), EditUserView {
     private lateinit var mName: EditText
     private lateinit var mRating: TextView
     private lateinit var mSave: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.loadUser(UserDao.getCurrentUserId())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -31,9 +31,12 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
         }
     }
 
+    init{
+        typeOfList = BlogsAdapter.TypeOfList.USER
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        super.setTypeOfList(BlogsAdapter.TypeOfList.USER)
 
         adapter.onUserBlogListener = object : BlogsAdapter.OnUserBlogListener {
             override fun onEdit(blog: Blog) {

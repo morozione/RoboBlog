@@ -11,7 +11,6 @@ import com.morozione.roboblog.ui.fragment.CreateBlogFragment
 import com.morozione.roboblog.ui.fragment.UserBlogsFragment
 import com.morozione.roboblog.utils.BottomNavigationViewHelper
 import com.morozione.roboblog.utils.bind
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
 
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
         BottomNavigationViewHelper.disableShiftMode(mNavigation)
 
         val mToolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(mToolbar)
     }
 
     private fun setListeners() {
@@ -77,10 +76,10 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
     }
 
     override fun onEdit(blog: Blog) {
-        tabAdapter.setSelectedItemPosition(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION)
         mNavigation.menu.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION).isChecked = true
-        tabAdapter.setSelectedItemPosition(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION + 1)
-        mContainer.currentItem = TabAdapter.CREATE_BLOG_FRAGMENT_POSITION + 1
+
+        tabAdapter.setSelectedItemPosition(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION)
+        mContainer.currentItem = TabAdapter.CREATE_BLOG_FRAGMENT_POSITION
 
         val fragment = tabAdapter.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION) as CreateBlogFragment
         fragment.setBlogForEdit(blog)

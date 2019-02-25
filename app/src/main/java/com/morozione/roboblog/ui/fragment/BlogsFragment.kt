@@ -1,6 +1,5 @@
 package com.morozione.roboblog.ui.fragment
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -18,8 +17,14 @@ import com.morozione.roboblog.utils.showSnackbar
 
 abstract class BlogsFragment : MvpAppCompatFragment() {
 
-    private var typeOfList = BlogsAdapter.TypeOfList.GLOBAL
-    protected var adapter = BlogsAdapter(BlogsAdapter.TypeOfList.USER, arrayListOf())
+    protected var typeOfList = BlogsAdapter.TypeOfList.GLOBAL
+    protected lateinit var adapter: BlogsAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        adapter = BlogsAdapter(typeOfList, arrayListOf())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +55,6 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     private fun openBlogDetails(blog: Blog) {
         val intent = Intent(context, BlogActivity::class.java)
         startActivity(BlogActivity.createBundleForBlog(intent, blog.id))
-    }
-
-    protected fun setTypeOfList(typeOfList: BlogsAdapter.TypeOfList) {
-        this.typeOfList = typeOfList
     }
 
     protected fun setBlogs(blogs: List<Blog>, isLoading: Boolean) {

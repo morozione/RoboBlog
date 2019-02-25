@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.morozione.azotova.utils.FragmentUtil
 import com.morozione.roboblog.Constants
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.presenter.BlogPresenter
 import com.morozione.roboblog.presenter.view.BlogView
+import com.morozione.roboblog.ui.fragment.UserSmallInformationFragment
 import com.morozione.roboblog.utils.bind
 import com.morozione.roboblog.utils.showSnackbar
 
@@ -22,8 +24,6 @@ class BlogActivity : MvpAppCompatActivity(), BlogView {
 
     private val mTitle by bind<TextView>(R.id.title)
     private val mDescription by bind<TextView>(R.id.description)
-
-    private lateinit var id: String
 
     companion object {
         fun createBundleForBlog(intent: Intent, id: String): Intent {
@@ -36,20 +36,20 @@ class BlogActivity : MvpAppCompatActivity(), BlogView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blog)
 
-        getBundleData()
-    }
-
-    override fun onResume() {
-        super.onResume()
         loadData()
-    }
-
-    private fun getBundleData() {
-        id = intent.getStringExtra(Constants.EXTRA_ID)
+        showUserData()
     }
 
     private fun loadData() {
-        blogPresenter.loadBlog(id)
+        intent.getStringExtra(Constants.EXTRA_ID)?.let {
+            blogPresenter.loadBlog(it)
+        }
+    }
+
+    private fun showUserData() {
+        intent.getStringExtra(Constants.EXTRA_ID)?.let {
+            FragmentUtil.changeFragmentTo(this, UserSmallInformationFragment.newInstance(it), UserSmallInformationFragment.TAG)
+        }
     }
 
     override fun onBlogUploaded(blog: Blog) {
@@ -62,6 +62,10 @@ class BlogActivity : MvpAppCompatActivity(), BlogView {
     }
 
     override fun onError() {
-        showSnackbar(findViewById<ViewGroup>(R.id.content), getString(R.string.error), Snackbar.LENGTH_LONG)
+        showSnackbar(
+            findViewById<ViewGroup>(R.id.content),
+            getString(R.string.error),
+            Snackbar.LENGTH_LONG
+        )
     }
 }

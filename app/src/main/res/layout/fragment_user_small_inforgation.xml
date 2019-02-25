@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.fragment.UserSmallInformationFragment">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/m_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:civ_circle_background_color="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/m_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/m_icon"
+        tools:text="Tools" />
+
+</android.support.constraint.ConstraintLayout>
