@@ -48,9 +48,8 @@ class UserSmallInformationFragment : MvpAppCompatFragment(), UserSmallInformatio
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_user_small_inforgation, container, false)
-    }
+    ) = inflater.inflate(R.layout.fragment_user_small_inforgation, container, false)
+
 
     override fun setUser(user: User) {
         Glide.with(m_icon).load(user.image).centerCrop().into(m_icon)

@@ -5,6 +5,7 @@ class Blog {
     var userId = ""
     var title = ""
     var descrption = ""
+    var icon = ""
     var rating = 0
     var date = 0L
     val appreciatedPeoples = hashMapOf<String, Int>()
@@ -14,9 +15,9 @@ class Blog {
      * -1 - if user disliked blog
      *  1 - if user liked blog
      */
-    fun getAppreciatedStatusByUser(userId: String): Int {
+    fun getAppreciatedStatusByUser(userId: String): Int? {
         if (appreciatedPeoples.keys.contains(userId)) {
-            return appreciatedPeoples[userId]!!
+            return appreciatedPeoples[userId]
         }
 
         return 0

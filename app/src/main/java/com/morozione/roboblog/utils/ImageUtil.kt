@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 
 object ImageUtil {
-
     fun decodeSampledBitmapFromResource(path: String, reqWidth: Int, reqHeight: Int): Bitmap {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true

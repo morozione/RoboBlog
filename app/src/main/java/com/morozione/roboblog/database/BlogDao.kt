@@ -51,6 +51,7 @@ class BlogDao {
                         e.onNext(blog)
                     }
                 }
+                e.onComplete()
             }
 
             override fun onCancelled(onError: DatabaseError) {
@@ -69,6 +70,7 @@ class BlogDao {
                             e.onNext(blog)
                         }
                     }
+                    e.onComplete()
                 }
 
                 override fun onCancelled(onError: DatabaseError) {

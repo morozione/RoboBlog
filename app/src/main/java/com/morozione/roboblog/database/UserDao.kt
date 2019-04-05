@@ -16,7 +16,8 @@ import io.reactivex.Single
 
 class UserDao {
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val firebaseReference = FirebaseDatabase.getInstance().reference.child(Constants.DATABASE_USER)
+    private val firebaseReference =
+        FirebaseDatabase.getInstance().reference.child(Constants.DATABASE_USER)
 
     val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
@@ -83,9 +84,12 @@ class UserDao {
         firebaseReference.orderByKey().equalTo(id)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val user = dataSnapshot.getValue(User::class.java)
-                    user?.let {
-                        e.onSuccess(user)
+                    for (child in dataSnapshot.children) {
+                        val user = child.getValue(User::class.java)
+                        user?.let {
+                            e.onSuccess(user)
+                            return
+                        }
                     }
                 }
 
@@ -96,7 +100,7 @@ class UserDao {
     }
 
     fun updateUser(user: User) = Completable.create { e ->
-        firebaseReference.child(user.id).ref.setValue(user)
+        firebaseReference.child(user.id).orderByKey().ref.setValue(user)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     e.onComplete()

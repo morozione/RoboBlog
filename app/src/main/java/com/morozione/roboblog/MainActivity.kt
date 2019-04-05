@@ -15,7 +15,7 @@ import com.morozione.roboblog.utils.bind
 class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
 
     private val mNavigation by bind<BottomNavigationView>(R.id.navigation)
-    private val mContainer by bind<ViewPager>(R.id.container)
+    private val mContainer by bind<ViewPager>(R.id.m_container)
 
     private lateinit var tabAdapter: TabAdapter
 

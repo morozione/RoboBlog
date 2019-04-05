@@ -12,7 +12,10 @@
     <string name="name">Name</string>
     <string name="save">Save</string>
     <string name="updated">Updated</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="image_download_progress_title">Image loading</string>
+    <string name="image_download_progress_text">Loading started, please wait</string>
 </resources>

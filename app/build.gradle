@@ -11,11 +11,12 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.morozione.roboblog"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -25,7 +26,15 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
+    configurations {
+        all*.exclude group: 'com.android.support', module: 'support-v13'
+    }
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //Kotlin
@@ -35,6 +44,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.afollestad.material-dialogs:core:0.9.4.3'
 
     //Firebase
     implementation "com.google.firebase:firebase-auth:$firebase_version"

@@ -2,24 +2,22 @@ package com.morozione.roboblog.ui.fragment
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.text.TextUtils
 import android.view.*
-import android.widget.EditText
-import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.presenter.CreateBlogPresenter
 import com.morozione.roboblog.presenter.view.CreateBlogView
-import com.morozione.roboblog.utils.bind
+import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
+import kotlinx.android.synthetic.main.fragment_create_blog.*
 
-class CreateBlogFragment : MvpAppCompatFragment(), CreateBlogView {
+class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
     @InjectPresenter
     lateinit var presenter: CreateBlogPresenter
-
-    private val mTitle by bind<EditText>(R.id.title)
-    private val mDescription by bind<EditText>(R.id.description)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,8 @@ class CreateBlogFragment : MvpAppCompatFragment(), CreateBlogView {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.save -> creteBlog()
+            R.id.m_save -> creteBlog()
+            R.id.m_image -> makePhoto()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -53,14 +52,21 @@ class CreateBlogFragment : MvpAppCompatFragment(), CreateBlogView {
     }
 
     private fun constructBlog(blog: Blog): Blog {
-        blog.title = mTitle.text.toString()
-        blog.descrption = mDescription.text.toString()
+        blog.title = m_title.text.toString()
+        blog.descrption = m_description.text.toString()
+        blog.icon = imageUri.toString()
 
         return blog
     }
 
     override fun onError() {
-        view?.let { showSnackbar(it, getString(R.string.something_was_wrong), Snackbar.LENGTH_SHORT) }
+        view?.let {
+            showSnackbar(
+                it,
+                getString(R.string.something_was_wrong),
+                Snackbar.LENGTH_SHORT
+            )
+        }
     }
 
     override fun onBlogCreated() {
@@ -75,14 +81,27 @@ class CreateBlogFragment : MvpAppCompatFragment(), CreateBlogView {
     }
 
     private fun emptyField() {
-        mTitle.setText("")
-        mDescription.setText("")
+        m_title.setText("")
+        m_description.setText("")
     }
 
     fun setBlogForEdit(blog: Blog) {
         presenter.blog = blog
 
-        mTitle.setText(blog.title)
-        mDescription.setText(blog.descrption)
+        m_title.setText(blog.title)
+        m_description.setText(blog.descrption)
+        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
+    }
+
+    override fun imageMade(imageUri: String?) {
+        if (imageUri != null && !TextUtils.isEmpty(imageUri.toString())) {
+            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
+                BaseImageFragment.imageUri.toString(),
+                300,
+                300
+            )
+            m_icon.setImageBitmap(bitmap)
+        }
+        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
     }
 }

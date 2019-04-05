@@ -84,8 +84,7 @@ class BlogsAdapter : RecyclerView.Adapter<BlogsAdapter.ViewHolder> {
             mDate.text = Utils.getFullDate(blog.date)
 
             itemView.setOnClickListener {
-                if (onBlogClickListener != null)
-                    onBlogClickListener!!.onBlogClick(blog)
+                onBlogClickListener?.onBlogClick(blog)
             }
         }
     }
@@ -99,7 +98,9 @@ class BlogsAdapter : RecyclerView.Adapter<BlogsAdapter.ViewHolder> {
             super.bind(blog)
             val userAppreciateStatus = blog.getAppreciatedStatusByUser(UserDao.getCurrentUserId())
             mRating.text = "${blog.rating}"
-            setRatingStatus(userAppreciateStatus)
+            userAppreciateStatus?.let {
+                setRatingStatus(userAppreciateStatus)
+            }
             mArrowUp.setOnClickListener {
                 blog.appreciatedPeoples[UserDao.getCurrentUserId()] = 1
                 onGlobalBlogListener?.onSetRating(blog, 1)
