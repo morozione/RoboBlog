@@ -1,9 +1,9 @@
-package com.morozione.roboblog.presenter
+package com.morozione.roboblog.mvp.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import com.morozione.roboblog.database.BlogDao
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.presenter.view.UserBlogsView
+import com.morozione.roboblog.mvp.view.UserBlogsView
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -42,5 +42,18 @@ class UserBlogsPresenter : MvpBasePresenter<UserBlogsView>() {
                     blogsIsLoading = false
                 }
             })
+    }
+
+    fun deleteBlog(id: String) {
+        compositeDisposable.add(
+            blogDao.removeBlog(id)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    viewState.onDeleted()
+                }, { e ->
+                    viewState.onError()
+                })
+        )
     }
 }

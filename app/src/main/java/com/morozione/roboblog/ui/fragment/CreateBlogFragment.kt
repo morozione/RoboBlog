@@ -8,8 +8,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.presenter.CreateBlogPresenter
-import com.morozione.roboblog.presenter.view.CreateBlogView
+import com.morozione.roboblog.mvp.presenter.CreateBlogPresenter
+import com.morozione.roboblog.mvp.view.CreateBlogView
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
 import kotlinx.android.synthetic.main.fragment_create_blog.*
@@ -28,7 +28,6 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = inflater.inflate(R.layout.fragment_create_blog, container, false)
-
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -55,6 +54,7 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
         blog.title = m_title.text.toString()
         blog.descrption = m_description.text.toString()
         blog.icon = imageUri.toString()
+        imageUri = null
 
         return blog
     }
@@ -83,6 +83,7 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     private fun emptyField() {
         m_title.setText("")
         m_description.setText("")
+        m_icon.setImageBitmap(null)
     }
 
     fun setBlogForEdit(blog: Blog) {
@@ -102,6 +103,6 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
             )
             m_icon.setImageBitmap(bitmap)
         }
-        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
+//        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
     }
 }

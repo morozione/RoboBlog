@@ -11,7 +11,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 
 class BlogDao {
-    private val firebaseReference = FirebaseDatabase.getInstance().reference.child(Constants.DATABASE_BLOG)
+    private val firebaseReference =
+        FirebaseDatabase.getInstance().reference.child(Constants.DATABASE_BLOG)
 
     fun create(blog: Blog): Completable = Completable.create { e ->
         val id = firebaseReference.push().key
@@ -97,14 +98,25 @@ class BlogDao {
             })
     }
 
-    fun appreciateBlog(blog: Blog, userId: String, rating: Int) = Completable.create { t ->
+    fun removeBlog(id: String) = Completable.create { emitter ->
+        firebaseReference.orderByKey().equalTo(id)
+            .ref.removeValue().addOnCompleteListener {
+            if (it.isSuccessful) {
+                emitter.onComplete()
+            } else {
+                emitter.onError(it.exception ?: Exception())
+            }
+        }
+    }
+
+    fun appreciateBlog(blog: Blog, userId: String, rating: Int) = Completable.create { emitter ->
         blog.appreciatedPeoples[userId] = rating
         firebaseReference.child(blog.id).ref.setValue(blog)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    t.onComplete()
+                    emitter.onComplete()
                 } else {
-                    t.onError(Exception())
+                    emitter.onError(it.exception ?: Exception())
                 }
             }
     }

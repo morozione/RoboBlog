@@ -1,5 +1,6 @@
 package com.morozione.roboblog.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.text.TextUtils
@@ -11,11 +12,13 @@ import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.User
-import com.morozione.roboblog.presenter.EditUserPresenter
-import com.morozione.roboblog.presenter.view.EditUserView
+import com.morozione.roboblog.mvp.presenter.EditUserPresenter
+import com.morozione.roboblog.mvp.view.EditUserView
+import com.morozione.roboblog.ui.activity.LoginActivity
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
 import kotlinx.android.synthetic.main.fragment_edit_user.*
+import kotlinx.android.synthetic.main.item_rating.*
 
 class EditUserFragment : BaseImageFragment(), EditUserView {
 
@@ -47,6 +50,12 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
         m_icon.setOnClickListener {
             makePhoto()
         }
+        m_exit.setOnClickListener {
+            presenter.signOut()
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
     }
 
     private fun getFilledUser(): User {
@@ -77,7 +86,11 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun imageMade(imageUri: String?) {
         if (imageUri != null && !TextUtils.isEmpty(imageUri.toString())) {
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(BaseImageFragment.imageUri.toString(), 300, 300)
+            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
+                BaseImageFragment.imageUri.toString(),
+                300,
+                300
+            )
             m_icon.setImageBitmap(bitmap)
         }
         context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }

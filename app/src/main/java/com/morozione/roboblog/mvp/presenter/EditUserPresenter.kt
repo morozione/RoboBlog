@@ -1,4 +1,4 @@
-package com.morozione.roboblog.presenter
+package com.morozione.roboblog.mvp.presenter
 
 import android.app.Activity
 import android.net.Uri
@@ -6,7 +6,7 @@ import com.arellomobile.mvp.InjectViewState
 import com.morozione.roboblog.database.ImageUploadUtils
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.User
-import com.morozione.roboblog.presenter.view.EditUserView
+import com.morozione.roboblog.mvp.view.EditUserView
 import io.reactivex.CompletableObserver
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,5 +69,9 @@ class EditUserPresenter : MvpBasePresenter<EditUserView>() {
             }
         } else
             updateUser(newUser)
+    }
+
+    fun signOut() {
+        userDao.signOut()
     }
 }

@@ -10,6 +10,7 @@ object Constants {
     const val BLOG_USER_ID = "userId"
 
     const val EXTRA_ID = "id"
+    const val EXTRA_BLOG_TYPE = "blog_type"
 
     const val USER_ID = "userId"
 }

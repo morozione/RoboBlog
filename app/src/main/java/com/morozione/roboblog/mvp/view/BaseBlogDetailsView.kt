@@ -1,9 +1,9 @@
-package com.morozione.roboblog.presenter.view
+package com.morozione.roboblog.mvp.view
 
 import com.arellomobile.mvp.MvpView
 import com.morozione.roboblog.entity.Blog
 
-interface BlogView : MvpView {
+interface BaseBlogDetailsView : MvpView {
     fun onBlogUploaded(blog: Blog)
     fun onError()
 }

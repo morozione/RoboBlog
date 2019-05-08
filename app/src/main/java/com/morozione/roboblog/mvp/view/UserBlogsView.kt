@@ -1,10 +1,10 @@
-package com.morozione.roboblog.presenter.view
+package com.morozione.roboblog.mvp.view
 
 import com.arellomobile.mvp.MvpView
 import com.morozione.roboblog.entity.Blog
 
-interface GlobalBlogsView : MvpView {
+interface UserBlogsView : MvpView {
     fun onBlogsUploaded(blogs: List<Blog>, isLoading: Boolean)
-    fun onRatingSuccess()
     fun onError()
+    fun onDeleted()
 }

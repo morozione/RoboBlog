@@ -2,9 +2,10 @@ package com.morozione.roboblog.ui.fragment
 
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.morozione.roboblog.R
+import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.presenter.GlobalBlogsPresenter
-import com.morozione.roboblog.presenter.view.GlobalBlogsView
+import com.morozione.roboblog.mvp.presenter.GlobalBlogsPresenter
+import com.morozione.roboblog.mvp.view.GlobalBlogsView
 import com.morozione.roboblog.ui.adapter.BlogsAdapter
 
 class GlobalBlogsFragment : BlogsFragment(), GlobalBlogsView {
@@ -13,7 +14,7 @@ class GlobalBlogsFragment : BlogsFragment(), GlobalBlogsView {
     lateinit var presenter: GlobalBlogsPresenter
 
     init{
-        typeOfList = BlogsAdapter.TypeOfList.GLOBAL
+        blogType = BlogType.GLOBAL
     }
 
     override fun onStart() {

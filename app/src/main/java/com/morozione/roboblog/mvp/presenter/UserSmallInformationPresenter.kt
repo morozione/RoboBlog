@@ -1,9 +1,9 @@
-package com.morozione.roboblog.presenter
+package com.morozione.roboblog.mvp.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.User
-import com.morozione.roboblog.presenter.view.UserSmallInformationView
+import com.morozione.roboblog.mvp.view.UserSmallInformationView
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

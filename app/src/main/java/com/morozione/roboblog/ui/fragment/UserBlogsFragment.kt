@@ -5,10 +5,11 @@ import android.content.Context
 import android.os.Bundle
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.morozione.roboblog.R
+import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.presenter.UserBlogsPresenter
-import com.morozione.roboblog.presenter.view.UserBlogsView
+import com.morozione.roboblog.mvp.presenter.UserBlogsPresenter
+import com.morozione.roboblog.mvp.view.UserBlogsView
 import com.morozione.roboblog.ui.adapter.BlogsAdapter
 
 class UserBlogsFragment : BlogsFragment(), UserBlogsView {
@@ -31,8 +32,8 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
         }
     }
 
-    init{
-        typeOfList = BlogsAdapter.TypeOfList.USER
+    init {
+        blogType = BlogType.USER
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,9 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
         adapter.onUserBlogListener = object : BlogsAdapter.OnUserBlogListener {
             override fun onEdit(blog: Blog) {
                 onUserBlogListener.onEdit(blog)
+            }
+            override fun onDelete(blog: Blog) {
+                userBloPresenter.deleteBlog(blog.id)
             }
         }
     }
@@ -53,6 +57,10 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
 
     override fun onBlogsUploaded(blogs: List<Blog>, isLoading: Boolean) {
         super.setBlogs(blogs, isLoading)
+    }
+
+    override fun onDeleted() {
+
     }
 
     override fun onError() {

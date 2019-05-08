@@ -10,8 +10,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.morozione.roboblog.MainActivity
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.User
-import com.morozione.roboblog.presenter.LoginPresenter
-import com.morozione.roboblog.presenter.view.LoginView
+import com.morozione.roboblog.mvp.presenter.LoginPresenter
+import com.morozione.roboblog.mvp.view.LoginView
 import com.morozione.roboblog.utils.bind
 
 class LoginActivity : MvpAppCompatActivity(), LoginView {

@@ -65,9 +65,8 @@ class UserDao {
     }
 
     fun saveUser(user: User) = Completable.create { e ->
-        val key = firebaseReference.push().key
-        user.id = key!!
-        firebaseReference.child(key)
+        user.id = getCurrentUserId()
+        firebaseReference.child(user.id)
             .setValue(user)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -110,5 +109,9 @@ class UserDao {
             }.addOnCanceledListener {
                 e.onError(Exception())
             }
+    }
+
+    fun signOut() {
+        FirebaseAuth.getInstance().signOut()
     }
 }

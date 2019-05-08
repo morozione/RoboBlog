@@ -1,17 +1,16 @@
-package com.morozione.roboblog.presenter
+package com.morozione.roboblog.mvp.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import com.morozione.roboblog.database.BlogDao
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.presenter.view.BlogView
+import com.morozione.roboblog.mvp.view.BaseBlogDetailsView
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.Subject
 
 @InjectViewState
-class BlogPresenter : MvpBasePresenter<BlogView>() {
+class BaseBlogDetailsPresenter : MvpBasePresenter<BaseBlogDetailsView>() {
     private val blogDao = BlogDao()
 
     fun loadBlog(id: String) {

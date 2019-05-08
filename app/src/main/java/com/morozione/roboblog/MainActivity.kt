@@ -1,5 +1,6 @@
 package com.morozione.roboblog
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
@@ -83,5 +84,11 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
 
         val fragment = tabAdapter.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION) as CreateBlogFragment
         fragment.setBlogForEdit(blog)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+
     }
 }

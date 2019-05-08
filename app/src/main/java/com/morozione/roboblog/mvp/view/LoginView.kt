@@ -1,4 +1,4 @@
-package com.morozione.roboblog.presenter.view
+package com.morozione.roboblog.mvp.view
 
 import com.arellomobile.mvp.MvpView
 

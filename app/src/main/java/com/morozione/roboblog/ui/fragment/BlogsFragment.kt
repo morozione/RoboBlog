@@ -10,20 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.morozione.roboblog.R
+import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.ui.activity.BlogActivity
+import com.morozione.roboblog.ui.activity.BlogDetailsActivity
 import com.morozione.roboblog.ui.adapter.BlogsAdapter
 import com.morozione.roboblog.utils.showSnackbar
 
 abstract class BlogsFragment : MvpAppCompatFragment() {
 
-    protected var typeOfList = BlogsAdapter.TypeOfList.GLOBAL
+    protected var blogType = BlogType.GLOBAL
     protected lateinit var adapter: BlogsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        adapter = BlogsAdapter(typeOfList, arrayListOf())
+        adapter = BlogsAdapter(blogType, arrayListOf())
     }
 
     override fun onCreateView(
@@ -53,8 +54,8 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     }
 
     private fun openBlogDetails(blog: Blog) {
-        val intent = Intent(context, BlogActivity::class.java)
-        startActivity(BlogActivity.createBundleForBlog(intent, blog.id))
+        val intent = Intent(context, BlogDetailsActivity::class.java)
+        startActivity(BlogDetailsActivity.createBundleForBlog(intent, blog.id, blogType))
     }
 
     protected fun setBlogs(blogs: List<Blog>, isLoading: Boolean) {

@@ -28,28 +28,16 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:id="@+id/m_rating_container"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/m_name_container">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_crown" />
+        <include layout="@layout/item_rating" />
 
-        <TextView
-            android:id="@+id/m_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/zero" />
-
-    </LinearLayout>
+    </FrameLayout>
 
     <Button
         android:id="@+id/m_save"
@@ -58,6 +46,18 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/button_background"
         android:text="@string/save"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/m_exit"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/m_exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button_background"
+        android:text="@string/exit"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
