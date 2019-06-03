@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
 
     private fun initUI() {
         tabAdapter = TabAdapter(supportFragmentManager, 4)
+        mContainer.offscreenPageLimit = 4
         mContainer.adapter = tabAdapter
         BottomNavigationViewHelper.disableShiftMode(mNavigation)
 
@@ -61,7 +62,11 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
             false
         }
         mContainer.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
 
             }
 
@@ -82,7 +87,8 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
         tabAdapter.setSelectedItemPosition(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION)
         mContainer.currentItem = TabAdapter.CREATE_BLOG_FRAGMENT_POSITION
 
-        val fragment = tabAdapter.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION) as CreateBlogFragment
+        val fragment =
+            tabAdapter.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION) as CreateBlogFragment
         fragment.setBlogForEdit(blog)
     }
 

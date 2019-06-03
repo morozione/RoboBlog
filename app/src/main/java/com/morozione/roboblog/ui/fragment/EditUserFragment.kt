@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
@@ -27,13 +25,18 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.loadUser(UserDao.getCurrentUserId())
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = inflater.inflate(R.layout.fragment_edit_user, container, false)
+
+    override fun onResume() {
+        super.onResume()
+        presenter.loadUser(UserDao.getCurrentUserId())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,12 +52,6 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
         }
         m_icon.setOnClickListener {
             makePhoto()
-        }
-        m_exit.setOnClickListener {
-            presenter.signOut()
-            val intent = Intent(context, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
         }
     }
 
@@ -93,6 +90,22 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
             )
             m_icon.setImageBitmap(bitmap)
         }
-        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.menu_user, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.m_logout -> {
+                presenter.signOut()
+                val intent = Intent(context, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

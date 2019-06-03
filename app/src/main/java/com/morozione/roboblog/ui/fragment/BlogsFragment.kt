@@ -15,6 +15,7 @@ import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.ui.activity.BlogDetailsActivity
 import com.morozione.roboblog.ui.adapter.BlogsAdapter
 import com.morozione.roboblog.utils.showSnackbar
+import kotlinx.android.synthetic.main.fragment_blogs.*
 
 abstract class BlogsFragment : MvpAppCompatFragment() {
 
@@ -33,9 +34,14 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_blogs, container, false)
         initView(rootView)
-        setListener()
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setListener()
     }
 
     private fun initView(rootView: View) {
@@ -51,6 +57,9 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
                 openBlogDetails(blog)
             }
         }
+        m_swipe_refresh.setOnRefreshListener {
+            onUpdate()
+        }
     }
 
     private fun openBlogDetails(blog: Blog) {
@@ -59,6 +68,8 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     }
 
     protected fun setBlogs(blogs: List<Blog>, isLoading: Boolean) {
+        hideProgress()
+
         if (isLoading) {
             adapter.addData(ArrayList(blogs))
         } else {
@@ -69,4 +80,14 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     protected fun showError(messge: String) {
         view?.let { showSnackbar(it, messge, Snackbar.LENGTH_LONG) }
     }
+
+    protected fun showProgress() {
+        m_swipe_refresh.isRefreshing = true
+    }
+
+    protected fun hideProgress() {
+        m_swipe_refresh.isRefreshing = false
+    }
+
+    abstract fun onUpdate()
 }

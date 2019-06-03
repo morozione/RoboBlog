@@ -1,6 +1,7 @@
 package com.morozione.roboblog
 
 object Constants {
+    //TODO rename to 'blog'
     const val DATABASE_BLOG = "plan"
     const val DATABASE_USER = "user"
 

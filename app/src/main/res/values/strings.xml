@@ -15,7 +15,7 @@
     <string name="updated">Updated</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
-
+    <string name="send">Send</string>
 
     <string name="image_download_progress_title">Image loading</string>
     <string name="image_download_progress_text">Loading started, please wait</string>

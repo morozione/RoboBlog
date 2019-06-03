@@ -31,6 +31,7 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
 
     interface OnGlobalBlogListener {
         fun onSetRating(blog: Blog, rating: Int)
+        fun onOpenChat(blog: Blog)
     }
 
     interface OnUserBlogListener {
@@ -76,11 +77,15 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
         private val mDescription: TextView = rootView.findViewById(R.id.description)
         private val mDate: TextView = rootView.findViewById(R.id.date)
         private val mIcon: ImageView = rootView.findViewById(R.id.m_icon)
+        private val mChat: ImageView = rootView.findViewById(R.id.m_chat)
 
         open fun bind(blog: Blog, position: Int) {
             mTitle.text = blog.title
             mDescription.text = blog.descrption
             mDate.text = Utils.getFullDate(blog.date)
+            mChat.setOnClickListener {
+                onGlobalBlogListener?.onOpenChat(blog)
+            }
 
             if (blog.icon.isNotEmpty()) {
                 mIcon.visibility = View.VISIBLE

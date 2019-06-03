@@ -43,6 +43,7 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
             override fun onEdit(blog: Blog) {
                 onUserBlogListener.onEdit(blog)
             }
+
             override fun onDelete(blog: Blog) {
                 userBloPresenter.deleteBlog(blog.id)
             }
@@ -61,6 +62,10 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
 
     override fun onDeleted() {
 
+    }
+
+    override fun onUpdate() {
+        userBloPresenter.loadBlogsByUserId(UserDao.getCurrentUserId())
     }
 
     override fun onError() {

@@ -2,14 +2,14 @@ package com.morozione.roboblog.ui.adapter
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import com.morozione.roboblog.ui.fragment.GlobalBlogsFragment
+import android.support.v4.app.FragmentPagerAdapter
 import com.morozione.roboblog.ui.fragment.CreateBlogFragment
-import com.morozione.roboblog.ui.fragment.UserBlogsFragment
 import com.morozione.roboblog.ui.fragment.EditUserFragment
+import com.morozione.roboblog.ui.fragment.GlobalBlogsFragment
+import com.morozione.roboblog.ui.fragment.UserBlogsFragment
 import java.util.*
 
-class TabAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentStatePagerAdapter(fm) {
+class TabAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentPagerAdapter(fm) {
 
     companion object {
         const val BLOGS_FRAGMENT_POSITION = 0
