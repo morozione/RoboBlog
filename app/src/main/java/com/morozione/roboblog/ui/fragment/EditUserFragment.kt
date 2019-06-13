@@ -68,7 +68,8 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     private fun fillView(user: User) {
         m_name.setText(user.name)
         m_rating.text = "${user.rating}"
-        context?.let { Glide.with(it).load(user.image).into(m_icon) }
+        if (imageUri == null)
+            context?.let { Glide.with(it).load(user.image).into(m_icon) }
     }
 
     override fun onUpdateSuccess(isSuccess: Boolean) {

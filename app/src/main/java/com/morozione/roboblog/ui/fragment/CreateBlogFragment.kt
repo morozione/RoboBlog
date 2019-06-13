@@ -44,9 +44,14 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
     private fun creteBlog() {
         if (presenter.blog == null) {
-            presenter.createBlog(constructBlog(Blog()))
+            activity?.let { activity ->
+                val blog = constructBlog(Blog())
+                presenter.createBlog(blog, blog.icon, activity)
+            }
         } else {
-            presenter.updateBlog(constructBlog(presenter.blog!!))
+            presenter.blog?.let { blog ->
+                presenter.updateBlog(constructBlog(blog))
+            }
         }
     }
 
@@ -71,6 +76,7 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
     override fun onBlogCreated() {
         view?.let { showSnackbar(it, getString(R.string.saved), Snackbar.LENGTH_SHORT) }
+        BaseImageFragment.imageUri = null
         emptyField()
     }
 
@@ -91,7 +97,8 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
         m_title.setText(blog.title)
         m_description.setText(blog.descrption)
-        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
+        if (imageUri == null)
+            context?.let { Glide.with(it).load(blog.icon).into(m_icon) }
     }
 
     override fun imageMade(imageUri: String?) {

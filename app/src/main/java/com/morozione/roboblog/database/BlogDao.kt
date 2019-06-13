@@ -100,13 +100,30 @@ class BlogDao {
 
     fun removeBlog(id: String) = Completable.create { emitter ->
         firebaseReference.orderByKey().equalTo(id)
-            .ref.removeValue().addOnCompleteListener {
-            if (it.isSuccessful) {
-                emitter.onComplete()
-            } else {
-                emitter.onError(it.exception ?: Exception())
-            }
-        }
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (child in dataSnapshot.children) {
+//                        val blog = child.getValue(Blog::class.java)
+//                        blog?.appreciatedPeoples
+                        child.ref.removeValue().addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                emitter.onComplete()
+                            } else {
+                                emitter.onError(it.exception ?: Exception())
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(onError: DatabaseError) {
+                    emitter.onError(onError.toException())
+                }
+            })
+//            if (it.isSuccessful) {
+//                emitter.onComplete()
+//            } else {
+//                emitter.onError(it.exception ?: Exception())
+//            }
     }
 
     fun appreciateBlog(blog: Blog, userId: String, rating: Int) = Completable.create { emitter ->
