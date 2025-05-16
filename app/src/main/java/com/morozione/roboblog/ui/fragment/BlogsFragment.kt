@@ -2,22 +2,24 @@ package com.morozione.roboblog.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.arellomobile.mvp.MvpAppCompatFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.morozione.roboblog.R
 import com.morozione.roboblog.core.BlogType
+import com.morozione.roboblog.databinding.FragmentBlogsBinding
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.ui.activity.BlogDetailsActivity
 import com.morozione.roboblog.ui.adapter.BlogsAdapter
 import com.morozione.roboblog.utils.showSnackbar
-import kotlinx.android.synthetic.main.fragment_blogs.*
+import moxy.MvpAppCompatFragment
 
 abstract class BlogsFragment : MvpAppCompatFragment() {
+
+    private lateinit var binding: FragmentBlogsBinding
 
     protected var blogType = BlogType.GLOBAL
     protected lateinit var adapter: BlogsAdapter
@@ -32,10 +34,10 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_blogs, container, false)
-        initView(rootView)
+        binding = FragmentBlogsBinding.inflate(inflater, container, false)
+        initView(binding.root)
 
-        return rootView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +59,7 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
                 openBlogDetails(blog)
             }
         }
-        m_swipe_refresh.setOnRefreshListener {
+        binding.mSwipeRefresh.setOnRefreshListener {
             onUpdate()
         }
     }
@@ -82,11 +84,11 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     }
 
     protected fun showProgress() {
-        m_swipe_refresh.isRefreshing = true
+        binding.mSwipeRefresh.isRefreshing = true
     }
 
     protected fun hideProgress() {
-        m_swipe_refresh.isRefreshing = false
+        binding.mSwipeRefresh.isRefreshing = false
     }
 
     abstract fun onUpdate()

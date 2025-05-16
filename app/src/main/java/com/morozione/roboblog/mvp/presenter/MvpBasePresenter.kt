@@ -1,8 +1,8 @@
 package com.morozione.roboblog.mvp.presenter
 
-import com.arellomobile.mvp.MvpPresenter
-import com.arellomobile.mvp.MvpView
-import io.reactivex.disposables.CompositeDisposable
+import moxy.MvpPresenter
+import moxy.MvpView
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 abstract class MvpBasePresenter<T : MvpView> : MvpPresenter<T>() {
     protected var compositeDisposable = CompositeDisposable()

@@ -1,23 +1,29 @@
-package com.morozione.roboblog.ui.dialog;
+package com.morozione.roboblog.ui.dialog
 
-import android.content.Context;
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
+import com.google.android.material.dialog.MaterialDialogs
+import com.morozione.roboblog.R
+import java.util.Calendar
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.morozione.roboblog.R;
-
-import java.util.Calendar;
-
-public class DialogFactory {
-    public interface OnDialogChangeDataListener {
-        void onDataChanged(Calendar calendar);
+object DialogFactory {
+    fun createDialogSelectMakingImage(
+        context: Context,
+        onItemClicked: (position: Int) -> Unit
+    ): AlertDialog.Builder {
+        return AlertDialog.Builder(context)
+            .setItems(
+                listOf(
+                    context.getText(R.string.gallery),
+                    context.getText(R.string.camera)
+                ).toTypedArray(),
+                { _, which ->
+                    onItemClicked(which)
+                })
     }
 
-    public static MaterialDialog.Builder createDialogSelectMakingImage(
-            Context context, MaterialDialog.ListCallback listCallback) {
-
-        return new MaterialDialog.Builder(context)
-                .items(context.getString(R.string.gallery), context.getString(R.string.camera))
-                .itemsCallback(listCallback);
+    interface OnDialogChangeDataListener {
+        fun onDataChanged(calendar: Calendar?)
     }
-
 }

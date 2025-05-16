@@ -1,12 +1,12 @@
 package com.morozione.roboblog.ui.adapter
 
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -55,7 +55,7 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.bind(blogs[position], position)
+        viewHolder.bind(blogs[position])
     }
 
     override fun getItemCount(): Int {
@@ -77,15 +77,11 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
         private val mDescription: TextView = rootView.findViewById(R.id.description)
         private val mDate: TextView = rootView.findViewById(R.id.date)
         private val mIcon: ImageView = rootView.findViewById(R.id.m_icon)
-        private val mChat: ImageView = rootView.findViewById(R.id.m_chat)
 
-        open fun bind(blog: Blog, position: Int) {
+        open fun bind(blog: Blog) {
             mTitle.text = blog.title
             mDescription.text = blog.descrption
             mDate.text = Utils.getFullDate(blog.date)
-            mChat.setOnClickListener {
-                onGlobalBlogListener?.onOpenChat(blog)
-            }
 
             if (blog.icon.isNotEmpty()) {
                 mIcon.visibility = View.VISIBLE
@@ -127,8 +123,8 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
         private val mArrowUp: ImageView = rootView.findViewById(R.id.m_arrow_up)
         private val mArrowDown: ImageView = rootView.findViewById(R.id.m_arrow_down)
 
-        override fun bind(blog: Blog, position: Int) {
-            super.bind(blog, position)
+        override fun bind(blog: Blog) {
+            super.bind(blog)
             val userAppreciateStatus = blog.getAppreciatedStatusByUser(UserDao.getCurrentUserId())
             mRating.text = "$userAppreciateStatus"
             userAppreciateStatus?.let {
@@ -174,8 +170,8 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
         private val mEdit: ImageView = rootView.findViewById(R.id.m_edit)
         private val mRemove: ImageView = rootView.findViewById(R.id.m_remove)
 
-        override fun bind(blog: Blog, position: Int) {
-            super.bind(blog, position)
+        override fun bind(blog: Blog) {
+            super.bind(blog)
             mEdit.setOnClickListener {
                 onUserBlogListener?.onEdit(blog)
             }

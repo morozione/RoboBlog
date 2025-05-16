@@ -1,41 +1,40 @@
 package com.morozione.roboblog.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.text.TextUtils
-import android.view.*
-import com.arellomobile.mvp.presenter.InjectPresenter
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.morozione.roboblog.R
 import com.morozione.roboblog.database.UserDao
+import com.morozione.roboblog.databinding.FragmentEditUserBinding
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.mvp.presenter.EditUserPresenter
 import com.morozione.roboblog.mvp.view.EditUserView
-import com.morozione.roboblog.ui.activity.LoginActivity
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
-import kotlinx.android.synthetic.main.fragment_edit_user.*
-import kotlinx.android.synthetic.main.item_rating.*
+import moxy.presenter.InjectPresenter
 
 class EditUserFragment : BaseImageFragment(), EditUserView {
+    
+    private lateinit var binding : FragmentEditUserBinding 
 
     @InjectPresenter
     lateinit var presenter: EditUserPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+        presenter.loadUser(UserDao.getCurrentUserId())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_edit_user, container, false)
-
-    override fun onResume() {
-        super.onResume()
-        presenter.loadUser(UserDao.getCurrentUserId())
+    ) : View {
+        binding = FragmentEditUserBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,18 +44,18 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     }
 
     private fun setListeners() {
-        m_save.setOnClickListener {
+        binding.mSave.setOnClickListener {
             activity?.let { activity ->
                 presenter.saveUser(activity, imageUri, getFilledUser())
             }
         }
-        m_icon.setOnClickListener {
+        binding.mIcon.setOnClickListener {
             makePhoto()
         }
     }
 
     private fun getFilledUser(): User {
-        presenter.user.name = m_name.text.toString()
+        presenter.user.name = binding.mName.text.toString()
         presenter.user.id = UserDao.getCurrentUserId()
         return presenter.user
     }
@@ -66,10 +65,9 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     }
 
     private fun fillView(user: User) {
-        m_name.setText(user.name)
-        m_rating.text = "${user.rating}"
-        if (imageUri == null)
-            context?.let { Glide.with(it).load(user.image).into(m_icon) }
+        binding.mName.setText(user.name)
+        binding.mRating.mRating.text = "${user.rating}"
+        context?.let { Glide.with(it).load(user.image).into(binding.mIcon) }
     }
 
     override fun onUpdateSuccess(isSuccess: Boolean) {
@@ -84,29 +82,9 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun imageMade(imageUri: String?) {
         if (imageUri != null && !TextUtils.isEmpty(imageUri.toString())) {
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
-                BaseImageFragment.imageUri.toString(),
-                300,
-                300
-            )
-            m_icon.setImageBitmap(bitmap)
+            val bitmap = ImageUtil.decodeSampledBitmapFromResource(BaseImageFragment.imageUri.toString(), 300, 300)
+            binding.mIcon.setImageBitmap(bitmap)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.menu_user, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.m_logout -> {
-                presenter.signOut()
-                val intent = Intent(context, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(binding.mIcon) }
     }
 }

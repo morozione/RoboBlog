@@ -6,7 +6,7 @@ import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import java.io.ByteArrayOutputStream
 import java.io.File
 

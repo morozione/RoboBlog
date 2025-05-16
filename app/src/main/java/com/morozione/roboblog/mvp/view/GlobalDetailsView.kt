@@ -1,14 +1,12 @@
 package com.morozione.roboblog.mvp.view
 
-import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-import io.reactivex.annotations.SchedulerSupport
+import moxy.MvpView
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
 interface GlobalDetailsView : MvpView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onRatingSuccess()
-
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onError()
 }

@@ -1,21 +1,23 @@
 package com.morozione.roboblog.ui.fragment
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import com.arellomobile.mvp.MvpAppCompatFragment
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
 import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
+import com.morozione.roboblog.databinding.FragmentUserSmallInforgationBinding
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.mvp.presenter.UserSmallInformationPresenter
 import com.morozione.roboblog.mvp.view.UserSmallInformationView
 import com.morozione.roboblog.utils.showSnackbar
-import kotlinx.android.synthetic.main.fragment_user_small_inforgation.*
-import kotlinx.android.synthetic.main.item_rating.*
 
 class UserSmallInformationFragment : MvpAppCompatFragment(), UserSmallInformationView {
+
+    private lateinit var binding: FragmentUserSmallInforgationBinding
 
     companion object {
         val TAG = this::class.java.name
@@ -46,18 +48,20 @@ class UserSmallInformationFragment : MvpAppCompatFragment(), UserSmallInformatio
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_user_small_inforgation, container, false)
-
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentUserSmallInforgationBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun setUser(user: User) {
-        Glide.with(m_icon).load(user.image).centerCrop().into(m_icon)
-        m_name.text = user.name
-        m_rating.text = "${user.rating}"
+        Glide.with(binding.mIcon).load(user.image).centerCrop().into(binding.mIcon)
+        binding.mName.text = user.name
+        binding.mRating.mRating.text = "${user.rating}"
     }
 
     override fun onError() {
-        showSnackbar(m_icon, getString(R.string.something_was_wrong), Snackbar.LENGTH_SHORT)
+        showSnackbar(binding.mIcon, getString(R.string.something_was_wrong), Snackbar.LENGTH_SHORT)
     }
 }

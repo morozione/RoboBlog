@@ -2,15 +2,15 @@ package com.morozione.roboblog.mvp.presenter
 
 import android.app.Activity
 import android.net.Uri
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
 import com.morozione.roboblog.database.BlogDao
 import com.morozione.roboblog.database.ImageUploadUtils
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.mvp.view.CreateBlogView
-import io.reactivex.CompletableObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.CompletableObserver
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.ArrayList
 
 @InjectViewState

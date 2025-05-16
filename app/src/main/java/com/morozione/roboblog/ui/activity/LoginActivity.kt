@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.arellomobile.mvp.MvpAppCompatActivity
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.MvpAppCompatActivity
+import moxy.presenter.InjectPresenter
 import com.morozione.roboblog.MainActivity
 import com.morozione.roboblog.R
 import com.morozione.roboblog.entity.User

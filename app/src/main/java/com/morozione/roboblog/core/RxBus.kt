@@ -1,7 +1,7 @@
 package com.morozione.roboblog.core
 
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 // Use object so we have a singleton instance
 object RxBus {
@@ -14,6 +14,6 @@ object RxBus {
 
     // Listen should return an Observable and not the publisher
     // Using ofType we filter only events that match that class type
-    fun <T> listen(eventType: Class<T>): Observable<T> = publisher.ofType(eventType)
+    fun <T: Any> listen(eventType: Class<T>): Observable<T> = publisher.ofType(eventType)
 
 }

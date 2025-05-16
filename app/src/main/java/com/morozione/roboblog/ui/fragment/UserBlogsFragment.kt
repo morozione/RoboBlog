@@ -3,7 +3,7 @@ package com.morozione.roboblog.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.presenter.InjectPresenter
 import com.morozione.roboblog.R
 import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.database.UserDao
@@ -23,7 +23,7 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
 
     private lateinit var onUserBlogListener: OnUserBlogListener
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnUserBlogListener) {
             onUserBlogListener = context

@@ -1,20 +1,22 @@
 package com.morozione.roboblog.ui.fragment
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import android.text.TextUtils
 import android.view.*
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.presenter.InjectPresenter
 import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
+import com.morozione.roboblog.databinding.FragmentCreateBlogBinding
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.mvp.presenter.CreateBlogPresenter
 import com.morozione.roboblog.mvp.view.CreateBlogView
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
-import kotlinx.android.synthetic.main.fragment_create_blog.*
 
 class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
+
+    private lateinit var binding: FragmentCreateBlogBinding
 
     @InjectPresenter
     lateinit var presenter: CreateBlogPresenter
@@ -27,14 +29,17 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_create_blog, container, false)
+    ) = FragmentCreateBlogBinding.inflate(inflater, container, false).apply {
+        binding = this
+        root
+    }.root
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.main_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.m_save -> creteBlog()
             R.id.m_image -> makePhoto()
@@ -56,8 +61,8 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     }
 
     private fun constructBlog(blog: Blog): Blog {
-        blog.title = m_title.text.toString()
-        blog.descrption = m_description.text.toString()
+        blog.title = binding.mTitle.text.toString()
+        blog.descrption = binding.mDescription.text.toString()
         blog.icon = imageUri.toString()
         imageUri = null
 
@@ -76,7 +81,7 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
     override fun onBlogCreated() {
         view?.let { showSnackbar(it, getString(R.string.saved), Snackbar.LENGTH_SHORT) }
-        BaseImageFragment.imageUri = null
+        imageUri = null
         emptyField()
     }
 
@@ -87,18 +92,18 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     }
 
     private fun emptyField() {
-        m_title.setText("")
-        m_description.setText("")
-        m_icon.setImageBitmap(null)
+        binding.mTitle.setText("")
+        binding.mDescription.setText("")
+        binding.mIcon.setImageBitmap(null)
     }
 
     fun setBlogForEdit(blog: Blog) {
         presenter.blog = blog
 
-        m_title.setText(blog.title)
-        m_description.setText(blog.descrption)
+        binding.mTitle.setText(blog.title)
+        binding.mDescription.setText(blog.descrption)
         if (imageUri == null)
-            context?.let { Glide.with(it).load(blog.icon).into(m_icon) }
+            context?.let { Glide.with(it).load(blog.icon).into(binding.mIcon) }
     }
 
     override fun imageMade(imageUri: String?) {
@@ -108,8 +113,8 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
                 300,
                 300
             )
-            m_icon.setImageBitmap(bitmap)
+            binding.mIcon.setImageBitmap(bitmap)
         }
-//        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(m_icon) }
+//        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(binding.mIcon) }
     }
 }

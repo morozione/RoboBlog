@@ -7,9 +7,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import com.arellomobile.mvp.MvpAppCompatFragment
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import moxy.MvpAppCompatFragment
 import com.morozione.roboblog.ui.dialog.DialogFactory
 
 abstract class BaseImageFragment : MvpAppCompatFragment() {
@@ -30,7 +30,7 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
         if (context == null)
             return
 
-        DialogFactory.createDialogSelectMakingImage(context) { _, _, position, _ ->
+        DialogFactory.createDialogSelectMakingImage(requireContext()) { position ->
             when (position) {
                 0 -> openGallery()
                 1 -> openCamera()
@@ -48,7 +48,7 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
         value.put(MediaStore.Images.Media.TITLE, "IMG")
         value.put(MediaStore.Images.Media.DESCRIPTION, "Camera")
         if (activity != null)
-            imageUri = activity!!.contentResolver
+            imageUri = requireActivity().contentResolver
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, value)
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -96,7 +96,8 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
             imageUri = data!!.data
         }
         val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = context!!.contentResolver.query(imageUri, filePathColumn, null, null, null)
+        val cursor =
+            requireContext().contentResolver.query(imageUri!!, filePathColumn, null, null, null)
         val columnIndex: Int
         if (cursor != null) {
             columnIndex = cursor.getColumnIndex(filePathColumn[0])

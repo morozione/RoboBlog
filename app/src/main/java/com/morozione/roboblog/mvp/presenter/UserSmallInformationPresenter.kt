@@ -1,13 +1,13 @@
 package com.morozione.roboblog.mvp.presenter
 
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.mvp.view.UserSmallInformationView
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 @InjectViewState
 class UserSmallInformationPresenter : MvpBasePresenter<UserSmallInformationView>() {

@@ -10,8 +10,8 @@ import com.morozione.roboblog.Constants
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.utils.Utils
-import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 
 
 class UserDao {

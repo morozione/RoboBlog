@@ -1,7 +1,7 @@
 package com.morozione.roboblog.ui.fragment
 
 import android.content.Intent
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.presenter.InjectPresenter
 import com.morozione.roboblog.R
 import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.entity.Blog
@@ -15,7 +15,7 @@ class GlobalBlogsFragment : BlogsFragment(), GlobalBlogsView {
     @InjectPresenter
     lateinit var presenter: GlobalBlogsPresenter
 
-    init {
+    init{
         blogType = BlogType.GLOBAL
     }
 

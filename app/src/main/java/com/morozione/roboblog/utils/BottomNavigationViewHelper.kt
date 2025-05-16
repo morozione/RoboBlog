@@ -1,10 +1,10 @@
 package com.morozione.roboblog.utils
 
 import android.annotation.SuppressLint
-import android.support.design.internal.BottomNavigationItemView
-import android.support.design.internal.BottomNavigationMenuView
-import android.support.design.widget.BottomNavigationView
 import android.util.Log
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 object BottomNavigationViewHelper {
     @SuppressLint("RestrictedApi")
@@ -21,7 +21,7 @@ object BottomNavigationViewHelper {
 //                item.setShiftingMode(false)
                 // set once again checked value, so view will be updated
 
-                item.isSelected = item.itemData.isChecked
+                item.isSelected = item.itemData?.isChecked ?: false
             }
         } catch (e: NoSuchFieldException) {
             Log.e("BNVHelper", "Unable to get shift mode field", e)

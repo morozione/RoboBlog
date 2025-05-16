@@ -1,15 +1,13 @@
 package com.morozione.roboblog.mvp.view
 
-import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
+import moxy.MvpView
 import com.morozione.roboblog.entity.Blog
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
 interface BaseBlogDetailsView : MvpView {
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onBlogUploaded(blog: Blog)
-
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onError()
 }

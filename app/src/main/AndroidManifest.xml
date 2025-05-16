@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.morozione.roboblog">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -14,10 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.ChatFragment"></activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".ui.activity.BlogDetailsActivity"></activity>
-        <activity android:name=".ui.activity.LoginActivity">
+        <activity android:name=".MainActivity" />
+        <activity android:name=".ui.activity.BlogDetailsActivity" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,5 +22,15 @@
             </intent-filter>
         </activity>
     </application>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
