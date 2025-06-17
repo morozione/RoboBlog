@@ -5,9 +5,9 @@ import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
-import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
 import com.morozione.roboblog.databinding.FragmentUserSmallInforgationBinding
 import com.morozione.roboblog.entity.User
@@ -56,7 +56,10 @@ class UserSmallInformationFragment : MvpAppCompatFragment(), UserSmallInformatio
     }
 
     override fun setUser(user: User) {
-        Glide.with(binding.mIcon).load(user.image).centerCrop().into(binding.mIcon)
+        Glide.with(requireContext())
+            .load(user.image)
+            .centerCrop()
+            .into(binding.mIcon)
         binding.mName.text = user.name
         binding.mRating.mRating.text = "${user.rating}"
     }

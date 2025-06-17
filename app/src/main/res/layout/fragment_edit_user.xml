@@ -31,19 +31,25 @@
 
     </FrameLayout>
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/m_icon"
         android:layout_width="160dp"
         android:layout_height="160dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_person"
+        app:civ_border_color="@android:color/darker_gray"
+        app:civ_border_width="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/m_name_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:hint="@string/name"
         app:layout_constraintTop_toBottomOf="@id/m_icon">
 

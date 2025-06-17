@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import com.morozione.roboblog.R
 import com.morozione.roboblog.database.UserDao
@@ -19,7 +20,7 @@ import moxy.presenter.InjectPresenter
 
 class EditUserFragment : BaseImageFragment(), EditUserView {
     
-    private lateinit var binding : FragmentEditUserBinding 
+    private lateinit var binding: FragmentEditUserBinding 
 
     @InjectPresenter
     lateinit var presenter: EditUserPresenter
@@ -32,14 +33,13 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) : View {
+    ): View {
         binding = FragmentEditUserBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setListeners()
     }
 
@@ -67,7 +67,18 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     private fun fillView(user: User) {
         binding.mName.setText(user.name)
         binding.mRating.mRating.text = "${user.rating}"
-        context?.let { Glide.with(it).load(user.image).into(binding.mIcon) }
+        if (!user.image.isNullOrEmpty()) {
+            loadImage(user.image)
+        }
+    }
+
+    private fun loadImage(imageUrl: String) {
+        Glide.with(requireContext())
+            .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.ic_person)
+            .error(R.drawable.ic_person)
+            .into(binding.mIcon)
     }
 
     override fun onUpdateSuccess(isSuccess: Boolean) {
@@ -81,10 +92,22 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     }
 
     override fun imageMade(imageUri: String?) {
-        if (imageUri != null && !TextUtils.isEmpty(imageUri.toString())) {
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(BaseImageFragment.imageUri.toString(), 300, 300)
+        if (imageUri != null && !TextUtils.isEmpty(imageUri)) {
+            // First show the bitmap directly for immediate feedback
+            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
+                BaseImageFragment.imageUri.toString(),
+                300,
+                300
+            )
             binding.mIcon.setImageBitmap(bitmap)
+            
+            // Then load with Glide for proper caching and handling
+            Glide.with(requireContext())
+                .load(BaseImageFragment.imageUri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .into(binding.mIcon)
         }
-        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(binding.mIcon) }
     }
 }

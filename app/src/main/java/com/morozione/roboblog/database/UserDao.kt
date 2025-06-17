@@ -1,11 +1,14 @@
 package com.morozione.roboblog.database
 
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
 import com.morozione.roboblog.Constants
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.entity.User
@@ -15,16 +18,15 @@ import io.reactivex.rxjava3.core.Single
 
 
 class UserDao {
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val firebaseReference =
-        FirebaseDatabase.getInstance().reference.child(Constants.DATABASE_USER)
+    private val firebaseAuth = Firebase.auth
+    private val firebaseReference = Firebase.database.reference.child(Constants.DATABASE_USER)
 
     val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
 
     companion object {
         fun getCurrentUserId(): String {
-            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val firebaseUser = Firebase.auth.currentUser
 
             return Utils.noNull(firebaseUser?.uid)
         }

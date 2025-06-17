@@ -85,12 +85,13 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
 
             if (blog.icon.isNotEmpty()) {
                 mIcon.visibility = View.VISIBLE
-                Glide.with(itemView.context).load(blog.icon)
-                    .listener(object : RequestListener<Drawable> {
+                Glide.with(itemView.context)
+                    .load(blog.icon)
+                    .addListener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(
                             e: GlideException?,
                             model: Any?,
-                            target: Target<Drawable>?,
+                            target: Target<Drawable>,
                             isFirstResource: Boolean
                         ): Boolean {
                             mIcon.visibility = View.GONE
@@ -98,16 +99,16 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
                         }
 
                         override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>,
+                            dataSource: DataSource,
                             isFirstResource: Boolean
                         ): Boolean {
-                            return false
+                             return false
                         }
-
-                    }).into(mIcon)
+                    })
+                    .into(mIcon)
             } else {
                 mIcon.visibility = View.GONE
             }

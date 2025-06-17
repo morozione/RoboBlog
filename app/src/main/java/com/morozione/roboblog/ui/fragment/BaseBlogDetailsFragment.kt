@@ -5,9 +5,9 @@ import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
-import com.bumptech.glide.Glide
 import com.morozione.roboblog.Constants
 import com.morozione.roboblog.R
 import com.morozione.roboblog.databinding.BaseBlogDetailsFragmentBinding
@@ -27,7 +27,6 @@ abstract class BaseBlogDetailsFragment : MvpAppCompatFragment(), BaseBlogDetails
 
     override fun onResume() {
         super.onResume()
-
         loadData()
     }
 
@@ -46,7 +45,9 @@ abstract class BaseBlogDetailsFragment : MvpAppCompatFragment(), BaseBlogDetails
 
         binding.mTitle.text = blog.title
         binding.mDescription.text = blog.descrption
-        Glide.with(this).load(blog.icon).into(binding.mImage)
+        Glide.with(requireContext())
+            .load(blog.icon)
+            .into(binding.mImage)
     }
 
     override fun onError() {

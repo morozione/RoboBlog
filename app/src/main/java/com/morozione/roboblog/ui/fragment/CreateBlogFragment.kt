@@ -5,12 +5,12 @@ import com.google.android.material.snackbar.Snackbar
 import android.text.TextUtils
 import android.view.*
 import moxy.presenter.InjectPresenter
-import com.bumptech.glide.Glide
 import com.morozione.roboblog.R
 import com.morozione.roboblog.databinding.FragmentCreateBlogBinding
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.mvp.presenter.CreateBlogPresenter
 import com.morozione.roboblog.mvp.view.CreateBlogView
+import com.morozione.roboblog.utils.GlideApp
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
 
@@ -36,11 +36,11 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.main_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
+        when (item.itemId) {
             R.id.m_save -> creteBlog()
             R.id.m_image -> makePhoto()
         }
@@ -65,7 +65,6 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
         blog.descrption = binding.mDescription.text.toString()
         blog.icon = imageUri.toString()
         imageUri = null
-
         return blog
     }
 
@@ -102,8 +101,13 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
         binding.mTitle.setText(blog.title)
         binding.mDescription.setText(blog.descrption)
-        if (imageUri == null)
-            context?.let { Glide.with(it).load(blog.icon).into(binding.mIcon) }
+        if (imageUri == null) {
+            context?.let { 
+                GlideApp.with(it)
+                    .load(blog.icon)
+                    .into(binding.mIcon) 
+            }
+        }
     }
 
     override fun imageMade(imageUri: String?) {
@@ -115,6 +119,5 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
             )
             binding.mIcon.setImageBitmap(bitmap)
         }
-//        context?.let { Glide.with(it).load(BaseImageFragment.imageUri).into(binding.mIcon) }
     }
 }
