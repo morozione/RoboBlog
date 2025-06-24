@@ -93,21 +93,45 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun imageMade(imageUri: String?) {
         if (imageUri != null && !TextUtils.isEmpty(imageUri)) {
-            // First show the bitmap directly for immediate feedback
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
-                BaseImageFragment.imageUri.toString(),
-                300,
-                300
-            )
-            binding.mIcon.setImageBitmap(bitmap)
-            
-            // Then load with Glide for proper caching and handling
-            Glide.with(requireContext())
-                .load(BaseImageFragment.imageUri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_person)
-                .error(R.drawable.ic_person)
-                .into(binding.mIcon)
+            try {
+                // Load the image directly with Glide for immediate display
+                Glide.with(requireContext())
+                    .load(imageUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(binding.mIcon)
+            } catch (e: Exception) {
+                // Fallback to bitmap loading if Glide fails
+                try {
+                    val bitmap = if (imageUri.startsWith("content://")) {
+                        // Use URI-based method for content URIs
+                        ImageUtil.decodeSampledBitmapFromUri(
+                            requireContext(),
+                            android.net.Uri.parse(imageUri),
+                            300,
+                            300
+                        )
+                    } else {
+                        // Use file-based method for regular file paths
+                        ImageUtil.decodeSampledBitmapFromResource(
+                            imageUri,
+                            300,
+                            300
+                        )
+                    }
+                    
+                    if (bitmap != null) {
+                        binding.mIcon.setImageBitmap(bitmap)
+                    } else {
+                        // If bitmap creation fails, show placeholder
+                        binding.mIcon.setImageResource(R.drawable.ic_person)
+                    }
+                } catch (ex: Exception) {
+                    // If both methods fail, show error
+                    binding.mIcon.setImageResource(R.drawable.ic_person)
+                }
+            }
         }
     }
 }

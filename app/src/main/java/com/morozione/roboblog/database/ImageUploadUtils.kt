@@ -48,7 +48,18 @@ class ImageUploadUtils(activity: Activity, private val compositeDisposable: Comp
                     progressDialog!!.setMessage("upload " + (i + 1) + "/" + paths.size)
 
                 val uri = Uri.parse(paths[i])
-                val bitmap = ImageUtil.decodeSampledBitmapFromResource(paths[i], px, px)
+                val bitmap = if (paths[i].startsWith("content://")) {
+                    activity.get()?.let { context ->
+                        ImageUtil.decodeSampledBitmapFromUri(context, uri, px, px)
+                    }
+                } else {
+                    ImageUtil.decodeSampledBitmapFromResource(paths[i], px, px)
+                }
+                
+                if (bitmap == null) {
+                    progressDialog?.dismiss()
+                    return
+                }
 
                 compositeDisposable.add(
                     imageDao.saveBitmap(

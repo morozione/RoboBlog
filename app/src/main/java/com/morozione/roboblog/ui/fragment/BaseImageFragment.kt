@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -39,8 +40,9 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
     }
 
     private fun openGallery() {
-        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(i, ACTION_SELECT_IMAGE)
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, ACTION_SELECT_IMAGE)
     }
 
     private fun openCamera() {
@@ -58,29 +60,39 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
 
     private fun checkAndAskPermission(): Boolean {
         activity?.let { activity ->
+            val permissionsToRequest = mutableListOf<String>()
+            
+            // Camera permission is always needed
             if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) !=
                 PackageManager.PERMISSION_GRANTED
             ) {
-                ActivityCompat
-                    .requestPermissions(
-                        activity,
-                        arrayOf(Manifest.permission.CAMERA),
-                        PERMISSION_REQUEST_CODE
-                    )
-                return false
+                permissionsToRequest.add(Manifest.permission.CAMERA)
             }
-            if (ContextCompat.checkSelfPermission(
+            
+            // Media permissions based on Android version
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Android 13+ (API 33+) - Use granular media permissions
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_IMAGES) !=
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    permissionsToRequest.add(Manifest.permission.READ_MEDIA_IMAGES)
+                }
+            } else {
+                // Android 12 and below - Use READ_EXTERNAL_STORAGE
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            }
+            
+            // Request permissions if any are missing
+            if (permissionsToRequest.isNotEmpty()) {
+                ActivityCompat.requestPermissions(
                     activity,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) !=
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat
-                    .requestPermissions(
-                        activity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        PERMISSION_REQUEST_CODE
-                    )
+                    permissionsToRequest.toTypedArray(),
+                    PERMISSION_REQUEST_CODE
+                )
                 return false
             }
         }
@@ -92,21 +104,39 @@ abstract class BaseImageFragment : MvpAppCompatFragment() {
         if (resultCode != Activity.RESULT_OK || context == null)
             return
 
-        if (requestCode == ACTION_SELECT_IMAGE) {
-            imageUri = data!!.data
+        when (requestCode) {
+            ACTION_SELECT_IMAGE -> {
+                // For gallery selection, use the URI directly
+                imageUri = data?.data
+                if (imageUri != null) {
+                    imageMade(imageUri.toString())
+                }
+            }
+            ACTION_IMAGE_CAPTURE -> {
+                // For camera capture, the imageUri is already set in openCamera()
+                // Don't reassign it from data?.data as it's usually null
+                if (imageUri != null) {
+                    imageMade(imageUri.toString())
+                }
+            }
         }
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor =
-            requireContext().contentResolver.query(imageUri!!, filePathColumn, null, null, null)
-        val columnIndex: Int
-        if (cursor != null) {
-            columnIndex = cursor.getColumnIndex(filePathColumn[0])
-            cursor.moveToFirst()
-            imageUri = Uri.parse(cursor.getString(columnIndex))
-            cursor.close()
-        }
+    }
 
-        imageMade(imageUri.toString())
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                // All permissions granted, show the photo dialog
+                showDialogMakePhoto()
+            } else {
+                // Some permissions denied, you might want to show a message to the user
+                // For now, we'll just not show the dialog
+            }
+        }
     }
 
     abstract fun imageMade(imageUri: String?)
