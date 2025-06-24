@@ -11,5 +11,7 @@ interface EditUserView : MvpView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onUpdateSuccess(isSuccess: Boolean)
     @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onLogoutSuccess()
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onError()
 }

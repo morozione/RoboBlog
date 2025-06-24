@@ -1,10 +1,9 @@
 package com.morozione.roboblog.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
@@ -14,9 +13,11 @@ import com.morozione.roboblog.databinding.FragmentEditUserBinding
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.mvp.presenter.EditUserPresenter
 import com.morozione.roboblog.mvp.view.EditUserView
+import com.morozione.roboblog.ui.activity.LoginActivity
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
 import moxy.presenter.InjectPresenter
+import androidx.core.net.toUri
 
 class EditUserFragment : BaseImageFragment(), EditUserView {
     
@@ -27,6 +28,7 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         presenter.loadUser(UserDao.getCurrentUserId())
     }
 
@@ -43,6 +45,21 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
         setListeners()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_user, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.m_logout -> {
+                presenter.signOut()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun setListeners() {
         binding.mSave.setOnClickListener {
             activity?.let { activity ->
@@ -55,8 +72,8 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     }
 
     private fun getFilledUser(): User {
+        // Only update the name from UI, preserve all other existing data
         presenter.user.name = binding.mName.text.toString()
-        presenter.user.id = UserDao.getCurrentUserId()
         return presenter.user
     }
 
@@ -67,7 +84,7 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
     private fun fillView(user: User) {
         binding.mName.setText(user.name)
         binding.mRating.mRating.text = "${user.rating}"
-        if (!user.image.isNullOrEmpty()) {
+        if (user.image.isNotEmpty()) {
             loadImage(user.image)
         }
     }
@@ -85,6 +102,14 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
         view?.let { showSnackbar(it, getString(R.string.saved), Snackbar.LENGTH_SHORT) }
     }
 
+    override fun onLogoutSuccess() {
+        // Navigate to LoginActivity and clear the activity stack
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity?.finish()
+    }
+
     override fun onError() {
         view?.let {
             showSnackbar(it, getString(R.string.something_was_wrong), Snackbar.LENGTH_SHORT)
@@ -93,21 +118,45 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
 
     override fun imageMade(imageUri: String?) {
         if (imageUri != null && !TextUtils.isEmpty(imageUri)) {
-            // First show the bitmap directly for immediate feedback
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
-                BaseImageFragment.imageUri.toString(),
-                300,
-                300
-            )
-            binding.mIcon.setImageBitmap(bitmap)
-            
-            // Then load with Glide for proper caching and handling
-            Glide.with(requireContext())
-                .load(BaseImageFragment.imageUri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_person)
-                .error(R.drawable.ic_person)
-                .into(binding.mIcon)
+            try {
+                // Load the image directly with Glide for immediate display
+                Glide.with(requireContext())
+                    .load(imageUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(binding.mIcon)
+            } catch (_: Exception) {
+                // Fallback to bitmap loading if Glide fails
+                try {
+                    val bitmap = if (imageUri.startsWith("content://")) {
+                        // Use URI-based method for content URIs
+                        ImageUtil.decodeSampledBitmapFromUri(
+                            requireContext(),
+                            imageUri.toUri(),
+                            300,
+                            300
+                        )
+                    } else {
+                        // Use file-based method for regular file paths
+                        ImageUtil.decodeSampledBitmapFromResource(
+                            imageUri,
+                            300,
+                            300
+                        )
+                    }
+                    
+                    if (bitmap != null) {
+                        binding.mIcon.setImageBitmap(bitmap)
+                    } else {
+                        // If bitmap creation fails, show placeholder
+                        binding.mIcon.setImageResource(R.drawable.ic_person)
+                    }
+                } catch (_: Exception) {
+                    // If both methods fail, show error
+                    binding.mIcon.setImageResource(R.drawable.ic_person)
+                }
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import android.text.TextUtils
 import android.view.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import moxy.presenter.InjectPresenter
 import com.morozione.roboblog.R
 import com.morozione.roboblog.databinding.FragmentCreateBlogBinding
@@ -111,13 +113,44 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     }
 
     override fun imageMade(imageUri: String?) {
-        if (imageUri != null && !TextUtils.isEmpty(imageUri.toString())) {
-            val bitmap = ImageUtil.decodeSampledBitmapFromResource(
-                BaseImageFragment.imageUri.toString(),
-                300,
-                300
-            )
-            binding.mIcon.setImageBitmap(bitmap)
+        if (imageUri != null && !TextUtils.isEmpty(imageUri)) {
+            try {
+                // Load the image directly with Glide for immediate display
+                Glide.with(requireContext())
+                    .load(imageUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.mIcon)
+            } catch (e: Exception) {
+                // Fallback to bitmap loading if Glide fails
+                try {
+                    val bitmap = if (imageUri.startsWith("content://")) {
+                        // Use URI-based method for content URIs
+                        ImageUtil.decodeSampledBitmapFromUri(
+                            requireContext(),
+                            android.net.Uri.parse(imageUri),
+                            300,
+                            300
+                        )
+                    } else {
+                        // Use file-based method for regular file paths
+                        ImageUtil.decodeSampledBitmapFromResource(
+                            imageUri,
+                            300,
+                            300
+                        )
+                    }
+                    
+                    if (bitmap != null) {
+                        binding.mIcon.setImageBitmap(bitmap)
+                    } else {
+                        // If bitmap creation fails, show placeholder
+                        binding.mIcon.setImageResource(R.drawable.ic_person)
+                    }
+                } catch (ex: Exception) {
+                    // If both methods fail, show error
+                    binding.mIcon.setImageResource(R.drawable.ic_person)
+                }
+            }
         }
     }
 }

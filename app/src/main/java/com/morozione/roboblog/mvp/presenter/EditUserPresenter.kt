@@ -30,6 +30,13 @@ class EditUserPresenter : MvpBasePresenter<EditUserView>() {
                 }
 
                 override fun onSuccess(t: User) {
+                    // Copy loaded user data to presenter's user field
+                    user.id = t.id
+                    user.name = t.name
+                    user.email = t.email
+                    user.image = t.image
+                    user.rating = t.rating
+                    
                     viewState.onUserLoaded(t)
                 }
 
@@ -73,5 +80,6 @@ class EditUserPresenter : MvpBasePresenter<EditUserView>() {
 
     fun signOut() {
         userDao.signOut()
+        viewState.onLogoutSuccess()
     }
 }
