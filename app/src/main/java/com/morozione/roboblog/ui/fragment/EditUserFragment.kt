@@ -126,14 +126,14 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
                     .placeholder(R.drawable.ic_person)
                     .error(R.drawable.ic_person)
                     .into(binding.mIcon)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 // Fallback to bitmap loading if Glide fails
                 try {
                     val bitmap = if (imageUri.startsWith("content://")) {
                         // Use URI-based method for content URIs
                         ImageUtil.decodeSampledBitmapFromUri(
                             requireContext(),
-                            imageUri.toUri(),
+                            android.net.Uri.parse(imageUri),
                             300,
                             300
                         )
@@ -145,14 +145,14 @@ class EditUserFragment : BaseImageFragment(), EditUserView {
                             300
                         )
                     }
-                    
+
                     if (bitmap != null) {
                         binding.mIcon.setImageBitmap(bitmap)
                     } else {
                         // If bitmap creation fails, show placeholder
                         binding.mIcon.setImageResource(R.drawable.ic_person)
                     }
-                } catch (_: Exception) {
+                } catch (ex: Exception) {
                     // If both methods fail, show error
                     binding.mIcon.setImageResource(R.drawable.ic_person)
                 }
