@@ -83,7 +83,7 @@ class BlogsAdapter(private var listType: BlogType, private var blogs: ArrayList<
             mDescription.text = blog.descrption
             mDate.text = Utils.getFullDate(blog.date)
 
-            if (blog.icon.isNotEmpty()) {
+            if (blog.icon?.isNotEmpty() == true) {
                 mIcon.visibility = View.VISIBLE
                 Glide.with(itemView.context)
                     .load(blog.icon)

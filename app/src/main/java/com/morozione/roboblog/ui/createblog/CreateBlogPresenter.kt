@@ -21,8 +21,9 @@ class CreateBlogPresenter : MvpBasePresenter<CreateBlogView>() {
                 blog.icon = patchs1[0]
                 createBlog(blog)
             }
-        } else
+        } else {
             createBlog(blog)
+        }
     }
 
     fun createBlog(blog: Blog) {

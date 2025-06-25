@@ -7,8 +7,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.ui.shared.adapter.TabAdapter
 import com.morozione.roboblog.ui.createblog.CreateBlogFragment
+import com.morozione.roboblog.ui.shared.adapter.TabAdapter
 import com.morozione.roboblog.ui.userblogs.UserBlogsFragment
 import com.morozione.roboblog.utils.BottomNavigationViewHelper
 import com.morozione.roboblog.utils.bind
@@ -90,6 +90,13 @@ class MainActivity : AppCompatActivity(), UserBlogsFragment.OnUserBlogListener {
         val fragment =
             tabAdapter.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION) as CreateBlogFragment
         fragment.setBlogForEdit(blog)
+    }
+
+    override fun onCreateArticle() {
+        // Navigate to create tab when "Create Article" button is clicked
+        mNavigation.menu.getItem(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION).isChecked = true
+        tabAdapter.setSelectedItemPosition(TabAdapter.CREATE_BLOG_FRAGMENT_POSITION)
+        mContainer.currentItem = TabAdapter.CREATE_BLOG_FRAGMENT_POSITION
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -43,33 +43,51 @@ class BlogDao {
     }
 
     fun getBlogs(): Observable<Blog> = Observable.create { e ->
-        firebaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (child in dataSnapshot.children) {
-                    val blog = child.getValue(Blog::class.java)
-                    blog?.let {
-                        blog.id = child.key!!
+        firebaseReference.orderByChild("date")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val blogs = mutableListOf<Blog>()
+                    for (child in dataSnapshot.children) {
+                        val blog = child.getValue(Blog::class.java)
+                        blog?.let {
+                            blog.id = child.key!!
+                            blogs.add(blog)
+                        }
+                    }
+                    // Sort by date descending (newest first) since Firebase orderByChild returns ascending
+                    blogs.sortByDescending { it.date }
+                    
+                    // Emit sorted blogs
+                    for (blog in blogs) {
                         e.onNext(blog)
                     }
+                    e.onComplete()
                 }
-                e.onComplete()
-            }
 
-            override fun onCancelled(onError: DatabaseError) {
-                e.onError(onError.toException())
-            }
-        })
+                override fun onCancelled(onError: DatabaseError) {
+                    e.onError(onError.toException())
+                }
+            })
     }
 
     fun getBlogsByUserId(userId: String): Observable<Blog> = Observable.create { e ->
         firebaseReference.orderByChild(Constants.BLOG_USER_ID).equalTo(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val blogs = mutableListOf<Blog>()
                     for (child in dataSnapshot.children) {
                         val blog = child.getValue(Blog::class.java)
                         blog?.let {
-                            e.onNext(blog)
+                            blog.id = child.key!!
+                            blogs.add(blog)
                         }
+                    }
+                    // Sort by date descending (newest first)
+                    blogs.sortByDescending { it.date }
+                    
+                    // Emit sorted blogs
+                    for (blog in blogs) {
+                        e.onNext(blog)
                     }
                     e.onComplete()
                 }

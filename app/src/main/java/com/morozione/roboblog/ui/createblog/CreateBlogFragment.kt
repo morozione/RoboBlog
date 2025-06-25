@@ -2,12 +2,15 @@ package com.morozione.roboblog.ui.createblog
 
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import android.text.TextUtils
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import moxy.presenter.InjectPresenter
+import com.google.android.material.snackbar.Snackbar
 import com.morozione.roboblog.R
 import com.morozione.roboblog.databinding.FragmentCreateBlogBinding
 import com.morozione.roboblog.entity.Blog
@@ -15,6 +18,7 @@ import com.morozione.roboblog.ui.shared.fragment.BaseImageFragment
 import com.morozione.roboblog.utils.GlideApp
 import com.morozione.roboblog.utils.ImageUtil
 import com.morozione.roboblog.utils.showSnackbar
+import moxy.presenter.InjectPresenter
 
 class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
 
@@ -65,7 +69,7 @@ class CreateBlogFragment : BaseImageFragment(), CreateBlogView {
     private fun constructBlog(blog: Blog): Blog {
         blog.title = binding.mTitle.text.toString()
         blog.descrption = binding.mDescription.text.toString()
-        blog.icon = imageUri.toString()
+        blog.icon = imageUri?.toString()
         imageUri = null
         return blog
     }

@@ -19,4 +19,9 @@
 
     <string name="image_download_progress_title">Image loading</string>
     <string name="image_download_progress_text">Loading started, please wait</string>
+    
+    <!-- Empty state strings -->
+    <string name="no_articles_yet">No Articles Yet</string>
+    <string name="create_your_first_article">You haven\'t created any articles yet.\nStart sharing your thoughts with the world!</string>
+    <string name="create_article">Create Article</string>
 </resources>

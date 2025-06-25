@@ -16,7 +16,7 @@ class EditUserPresenter : MvpBasePresenter<EditUserView>() {
 
     fun loadUser(userId: String) {
         userDao.loadUser(userId).subscribeWithSchedulers(
-            onSuccess = { t ->
+            onNext = { t ->
                 // Copy loaded user data to presenter's user field
                 user.id = t.id
                 user.name = t.name

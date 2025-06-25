@@ -5,7 +5,7 @@ class Blog {
     var userId = ""
     var title = ""
     var descrption = ""
-    var icon = ""
+    var icon : String? = null
     var rating = 0
     var date = 0L
     val appreciatedPeoples = hashMapOf<String, Int>()

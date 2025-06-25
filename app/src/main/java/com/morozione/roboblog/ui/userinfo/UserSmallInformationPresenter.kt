@@ -11,7 +11,7 @@ class UserSmallInformationPresenter : MvpBasePresenter<UserSmallInformationView>
 
     fun loadUser(userId: String) {
         userDao.loadUser(userId).subscribeWithSchedulers(
-            onSuccess = { user -> viewState.setUser(user) },
+            onNext = { user -> viewState.setUser(user) },
             onError = { viewState.onError() }
         )
     }

@@ -3,20 +3,20 @@ package com.morozione.roboblog.ui.userblogs
 
 import android.content.Context
 import android.os.Bundle
-import moxy.presenter.InjectPresenter
+import android.view.View
 import com.morozione.roboblog.R
 import com.morozione.roboblog.core.BlogType
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.ui.blogs.BlogsFragment
-import com.morozione.roboblog.ui.userblogs.UserBlogsPresenter
-import com.morozione.roboblog.ui.userblogs.UserBlogsView
 import com.morozione.roboblog.ui.shared.adapter.BlogsAdapter
+import moxy.presenter.InjectPresenter
 
 class UserBlogsFragment : BlogsFragment(), UserBlogsView {
 
     interface OnUserBlogListener {
         fun onEdit(blog: Blog)
+        fun onCreateArticle()
     }
 
     @InjectPresenter
@@ -51,10 +51,24 @@ class UserBlogsFragment : BlogsFragment(), UserBlogsView {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Set up create article button click listener
+        setCreateArticleClickListener {
+            onUserBlogListener.onCreateArticle()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
         userBloPresenter.loadBlogsByUserId(UserDao.getCurrentUserId())
+    }
+
+    override fun shouldShowEmptyState(): Boolean {
+        // Show empty state for user blogs when there are no articles
+        return true
     }
 
     override fun onBlogsUploaded(blogs: List<Blog>, isLoading: Boolean) {

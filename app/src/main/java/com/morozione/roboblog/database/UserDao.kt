@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.morozione.roboblog.Constants
@@ -14,7 +13,7 @@ import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.utils.Utils
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.Observable
 
 
 class UserDao {
@@ -81,14 +80,14 @@ class UserDao {
             }
     }
 
-    fun loadUser(id: String) = Single.create<User> { e ->
+    fun loadUser(id: String) = Observable.create<User> { e ->
         firebaseReference.orderByKey().equalTo(id)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (child in dataSnapshot.children) {
                         val user = child.getValue(User::class.java)
                         user?.let {
-                            e.onSuccess(user)
+                            e.onNext(user)
                             return
                         }
                     }

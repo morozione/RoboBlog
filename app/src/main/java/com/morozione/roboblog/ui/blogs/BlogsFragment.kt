@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +25,8 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
 
     protected var blogType = BlogType.GLOBAL
     protected lateinit var adapter: BlogsAdapter
+    private lateinit var emptyStateContainer: LinearLayout
+    private lateinit var createArticleButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +55,10 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
         mRecyclerView.adapter = adapter
         mRecyclerView.setHasFixedSize(true)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
+        
+        // Initialize empty state views
+        emptyStateContainer = rootView.findViewById(R.id.empty_state_container)
+        createArticleButton = rootView.findViewById(R.id.create_article_button)
     }
 
     private fun setListener() {
@@ -77,6 +85,9 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
         } else {
             adapter.swapData(ArrayList(blogs))
         }
+        
+        // Show/hide empty state based on whether we have blogs
+        updateEmptyState(adapter.itemCount == 0)
     }
 
     protected fun showError(messge: String) {
@@ -89,6 +100,27 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
 
     protected fun hideProgress() {
         binding.mSwipeRefresh.isRefreshing = false
+    }
+
+    protected fun updateEmptyState(isEmpty: Boolean) {
+        if (isEmpty && shouldShowEmptyState()) {
+            emptyStateContainer.visibility = View.VISIBLE
+            // Hide the SwipeRefreshLayout which contains the RecyclerView
+            binding.mSwipeRefresh.visibility = View.GONE
+        } else {
+            emptyStateContainer.visibility = View.GONE
+            // Show the SwipeRefreshLayout which contains the RecyclerView
+            binding.mSwipeRefresh.visibility = View.VISIBLE
+        }
+    }
+
+    protected open fun shouldShowEmptyState(): Boolean {
+        // By default, don't show empty state for global blogs
+        return false
+    }
+
+    protected fun setCreateArticleClickListener(listener: () -> Unit) {
+        createArticleButton.setOnClickListener { listener.invoke() }
     }
 
     abstract fun onUpdate()
