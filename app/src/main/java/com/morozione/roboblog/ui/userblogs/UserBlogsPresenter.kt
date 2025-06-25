@@ -1,14 +1,8 @@
 package com.morozione.roboblog.ui.userblogs
 
-import moxy.InjectViewState
 import com.morozione.roboblog.database.BlogDao
-import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.ui.userblogs.UserBlogsView
 import com.morozione.roboblog.ui.shared.presenter.MvpBasePresenter
-import io.reactivex.rxjava3.core.Observer
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import moxy.InjectViewState
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
@@ -18,35 +12,25 @@ class UserBlogsPresenter : MvpBasePresenter<UserBlogsView>() {
     private var blogsIsLoading = false
 
     fun loadBlogsByUserId(userId: String) {
-        compositeDisposable.add(
-            blogDao.getBlogsByUserId(userId)
-                .buffer(100, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { blogs ->
-                        viewState.onBlogsUploaded(blogs, blogsIsLoading)
-                        blogsIsLoading = true
-                    },
-                    { 
-                        viewState.onError()
-                        blogsIsLoading = false
-                    },
-                    { blogsIsLoading = false }
-                )
-        )
+        blogDao.getBlogsByUserId(userId)
+            .buffer(100, TimeUnit.MILLISECONDS)
+            .subscribeWithSchedulers(
+                onNext = { blogs ->
+                    viewState.onBlogsUploaded(blogs, blogsIsLoading)
+                    blogsIsLoading = true
+                },
+                onError = { 
+                    viewState.onError()
+                    blogsIsLoading = false
+                },
+                onComplete = { blogsIsLoading = false }
+            )
     }
 
     fun deleteBlog(id: String) {
-        compositeDisposable.add(
-            blogDao.removeBlog(id)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    viewState.onDeleted()
-                }, { e ->
-                    viewState.onError()
-                })
+        blogDao.removeBlog(id).subscribeWithSchedulers(
+            onComplete = { viewState.onDeleted() },
+            onError = { viewState.onError() }
         )
     }
 }

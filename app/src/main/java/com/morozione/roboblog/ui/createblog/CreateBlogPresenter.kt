@@ -1,16 +1,11 @@
 package com.morozione.roboblog.ui.createblog
 
 import android.app.Activity
-import moxy.InjectViewState
 import com.morozione.roboblog.database.BlogDao
 import com.morozione.roboblog.database.ImageUploadUtils
 import com.morozione.roboblog.entity.Blog
 import com.morozione.roboblog.ui.shared.presenter.MvpBasePresenter
-import io.reactivex.rxjava3.core.CompletableObserver
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.ArrayList
+import moxy.InjectViewState
 
 @InjectViewState
 class CreateBlogPresenter : MvpBasePresenter<CreateBlogView>() {
@@ -31,26 +26,16 @@ class CreateBlogPresenter : MvpBasePresenter<CreateBlogView>() {
     }
 
     fun createBlog(blog: Blog) {
-        compositeDisposable.add(
-            blogDao.create(blog)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { viewState.onBlogCreated() },
-                    { viewState.onError() }
-                )
+        blogDao.create(blog).subscribeWithSchedulers(
+            onComplete = { viewState.onBlogCreated() },
+            onError = { viewState.onError() }
         )
     }
 
     fun updateBlog(blog: Blog) {
-        compositeDisposable.add(
-            blogDao.update(blog)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { viewState.onBlogUpdated() },
-                    { viewState.onError() }
-                )
+        blogDao.update(blog).subscribeWithSchedulers(
+            onComplete = { viewState.onBlogUpdated() },
+            onError = { viewState.onError() }
         )
     }
 }
