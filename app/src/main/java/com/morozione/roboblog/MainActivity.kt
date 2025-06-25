@@ -7,9 +7,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.morozione.roboblog.entity.Blog
-import com.morozione.roboblog.ui.adapter.TabAdapter
-import com.morozione.roboblog.ui.fragment.CreateBlogFragment
-import com.morozione.roboblog.ui.fragment.UserBlogsFragment
+import com.morozione.roboblog.ui.shared.adapter.TabAdapter
+import com.morozione.roboblog.ui.createblog.CreateBlogFragment
+import com.morozione.roboblog.ui.userblogs.UserBlogsFragment
 import com.morozione.roboblog.utils.BottomNavigationViewHelper
 import com.morozione.roboblog.utils.bind
 

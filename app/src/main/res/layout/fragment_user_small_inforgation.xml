@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        tools:context=".ui.fragment.UserSmallInformationFragment">
+        tools:context=".ui.userinfo.UserSmallInformationFragment">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/m_icon"

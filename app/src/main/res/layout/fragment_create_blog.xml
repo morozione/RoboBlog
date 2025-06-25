@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="8dp"
-        tools:context=".ui.fragment.CreateBlogFragment">
+        tools:context=".ui.createblog.CreateBlogFragment">
 
         <EditText
             android:id="@+id/m_title"
