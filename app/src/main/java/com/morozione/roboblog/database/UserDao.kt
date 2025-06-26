@@ -4,9 +4,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.morozione.roboblog.Constants
 import com.morozione.roboblog.entity.Blog
@@ -14,9 +11,9 @@ import com.morozione.roboblog.entity.User
 import com.morozione.roboblog.utils.Utils
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 
-
-class UserDao {
+class UserDao : BaseDao() {
     private val firebaseAuth = Firebase.auth
     private val firebaseReference = Firebase.database.reference.child(Constants.DATABASE_USER)
 
@@ -47,69 +44,43 @@ class UserDao {
         }
     }
 
-    fun changeValue(blog: Blog, value: Int, field: String) {
-        firebaseReference.child(blog.userId).ref.child(field)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.value != null) {
-                        val numberOfComments = dataSnapshot.value as Long
-                        dataSnapshot.ref.setValue(numberOfComments + value)
-                    } else {
-                        dataSnapshot.ref.setValue(1)
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-
-                }
-            })
+    fun changeValue(blog: Blog, value: Int, field: String): Completable {
+        val userRef = firebaseReference.child(blog.userId).child(field)
+        return userRef.asSingle { snapshot ->
+            snapshot.value as? Long
+        }.flatMapCompletable { currentValue ->
+            userRef.updateValueCompletable(currentValue, value)
+        }.onErrorResumeNext {
+            // If field doesn't exist, set initial value
+            userRef.asCompletable(value)
+        }
     }
 
-    fun saveUser(user: User) = Completable.create { e ->
+    fun saveUser(user: User): Completable {
         user.id = getCurrentUserId()
-        firebaseReference.child(user.id)
-            .setValue(user)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    e.onComplete()
-                } else {
-                    e.onError(Exception(it.exception.toString()))
-                }
-            }.addOnCanceledListener {
-                e.onError(Exception())
-            }
+        return firebaseReference.child(user.id).asCompletable(user)
     }
 
-    fun loadUser(id: String) = Observable.create<User> { e ->
-        firebaseReference.orderByKey().equalTo(id)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    for (child in dataSnapshot.children) {
-                        val user = child.getValue(User::class.java)
-                        user?.let {
-                            e.onNext(user)
-                            return
-                        }
-                    }
-                }
-
-                override fun onCancelled(onError: DatabaseError) {
-                    e.onError(onError.toException())
-                }
-            })
+    // One-time user load (for backwards compatibility if needed)
+    fun loadUserOnce(id: String): Single<User> {
+        return firebaseReference.child(id).asSingle { snapshot ->
+            snapshot.getValue(User::class.java)?.apply { 
+                this.id = snapshot.key ?: id 
+            }
+        }
+    }
+    
+    // Real-time reactive user loading (now the main method)
+    fun loadUser(id: String): Observable<User> {
+        return firebaseReference.child(id).asRealtimeObservableObject { snapshot ->
+            snapshot.getValue(User::class.java)?.apply { 
+                this.id = snapshot.key ?: id 
+            }
+        }.share() // Share the Observable to avoid multiple Firebase listeners
     }
 
-    fun updateUser(user: User) = Completable.create { e ->
-        firebaseReference.child(user.id).orderByKey().ref.setValue(user)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    e.onComplete()
-                } else {
-                    e.onError(Exception(it.exception.toString()))
-                }
-            }.addOnCanceledListener {
-                e.onError(Exception())
-            }
+    fun updateUser(user: User): Completable {
+        return firebaseReference.child(user.id).asCompletable(user)
     }
 
     fun signOut() {

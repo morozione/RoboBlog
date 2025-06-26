@@ -6,101 +6,109 @@ import android.net.Uri
 import com.morozione.roboblog.R
 import com.morozione.roboblog.utils.ImageUtil
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.lang.ref.WeakReference
 
 class ImageUploadUtils(activity: Activity, private val compositeDisposable: CompositeDisposable) {
 
-    private lateinit var paths: MutableList<String>
-    private val activity: WeakReference<Activity> = WeakReference(activity)
+    private val activityRef: WeakReference<Activity> = WeakReference(activity)
     private var progressDialog: ProgressDialog? = null
-    private var prefix: String? = null
-    private var countOfLoadedImages: Int = 0
-    private lateinit var linksResult: (MutableList<String>) -> Unit
-
-    private var imageDao = ImageDao()
+    private val imageDao = ImageDao()
 
     fun uploadImages(
         paths: MutableList<String>,
         prefix: String,
-        linksResult: (MutableList<String>) -> Unit
+        onResult: (MutableList<String>) -> Unit,
+        onError: (Throwable) -> Unit = {}
     ) {
-        this.paths = paths
-        this.prefix = prefix
-        this.linksResult = linksResult
-        imageDao = ImageDao()
-        countOfLoadedImages = 0
-
-        if (!paths.isEmpty()) {
-            showProgressDialog()
-            checkPath()
+        if (paths.isEmpty()) {
+            onResult(mutableListOf())
+            return
         }
+
+        showProgressDialog()
+        
+        compositeDisposable.add(
+            Observable.fromIterable(paths.withIndex())
+                .flatMap { (index, path) ->
+                    if (path.startsWith("https://")) {
+                        // Already uploaded, return as is
+                        Observable.just(path)
+                    } else {
+                        // Upload new image
+                        uploadSingleImage(path, prefix, index)
+                            .toObservable()
+                            .doOnNext { updateProgress(index + 1, paths.size) }
+                    }
+                }
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { results ->
+                        hideProgressDialog()
+                        onResult(results.toMutableList())
+                    },
+                    { error ->
+                        hideProgressDialog()
+                        onError(error)
+                    }
+                )
+        )
     }
 
-    private fun checkPath() {
-        val px = 300
-        for (i in paths.indices) {
-            val s = paths[i].substring(0, 6)
-            if (!paths[i].contains("https://")) {
+    private fun uploadSingleImage(path: String, prefix: String, index: Int) = 
+        imageDao.saveBitmap(
+            // createBitmapFromPath now automatically handles EXIF rotation
+            createBitmapFromPath(path) ?: throw Exception("Failed to create bitmap from path: $path"),
+            "$prefix-${Uri.parse(path).lastPathSegment ?: "image_$index"}"
+        )
 
-                if (progressDialog!!.isShowing)
-                    progressDialog!!.setMessage("upload " + (i + 1) + "/" + paths.size)
-
-                val uri = Uri.parse(paths[i])
-                val bitmap = if (paths[i].startsWith("content://")) {
-                    activity.get()?.let { context ->
-                        ImageUtil.decodeSampledBitmapFromUri(context, uri, px, px)
-                    }
-                } else {
-                    ImageUtil.decodeSampledBitmapFromResource(paths[i], px, px)
-                }
-                
-                if (bitmap == null) {
-                    progressDialog?.dismiss()
-                    return
-                }
-
-                compositeDisposable.add(
-                    imageDao.saveBitmap(
-                        bitmap,
-                        prefix + "-" + uri.lastPathSegment
-                    )
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ result ->
-                            for (i in paths.indices) {
-                                if (paths[i].contains("https://"))
-                                    continue
-
-                                countOfLoadedImages++
-                                paths[i] = result
-                                checkPath()
-                                break
-                            }
-                            if (countOfLoadedImages == paths.size)
-                                linksResult(paths)
-                        }, { e ->
-                            progressDialog!!.dismiss()
-                        })
-                )
-                break
+    /**
+     * Create bitmap from path with automatic EXIF rotation handling
+     * This ensures images are correctly oriented regardless of camera capture orientation
+     */
+    private fun createBitmapFromPath(path: String, targetSize: Int = 300) = 
+        activityRef.get()?.let { activity ->
+            if (path.startsWith("content://")) {
+                ImageUtil.decodeSampledBitmapFromUri(activity, Uri.parse(path), targetSize, targetSize)
+            } else {
+                ImageUtil.decodeSampledBitmapFromResource(path, targetSize, targetSize)
             }
-            if (i == paths.size - 1) {
-                if (progressDialog!!.isShowing)
-                    progressDialog!!.dismiss()
+        }
+
+    private fun updateProgress(current: Int, total: Int) {
+        progressDialog?.let { dialog ->
+            if (dialog.isShowing) {
+                dialog.setMessage("Uploading $current/$total")
             }
         }
     }
 
     private fun showProgressDialog() {
-        activity.get()?.let { activity ->
-            progressDialog = ProgressDialog(activity)
-            progressDialog!!.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-            progressDialog!!.setCancelable(false)
-            progressDialog!!.setTitle(activity.getString(R.string.image_download_progress_title))
-            progressDialog!!.setMessage(activity.getString(R.string.image_download_progress_text))
-            progressDialog!!.show()
+        activityRef.get()?.let { activity ->
+            progressDialog = ProgressDialog(activity).apply {
+                setProgressStyle(ProgressDialog.STYLE_SPINNER)
+                setCancelable(false)
+                setTitle(activity.getString(R.string.image_download_progress_title))
+                setMessage(activity.getString(R.string.image_download_progress_text))
+                show()
+            }
         }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.let { dialog ->
+            if (dialog.isShowing) {
+                dialog.dismiss()
+            }
+        }
+        progressDialog = null
+    }
+
+    fun dispose() {
+        hideProgressDialog()
     }
 }

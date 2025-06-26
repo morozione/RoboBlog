@@ -1,6 +1,5 @@
 package com.morozione.roboblog.ui.globaldetails
 
-import com.morozione.roboblog.Constants
 import com.morozione.roboblog.database.BlogDao
 import com.morozione.roboblog.database.UserDao
 import com.morozione.roboblog.entity.Blog
@@ -14,8 +13,6 @@ class GlobalDetailsPresenter : MvpBasePresenter<GlobalDetailsView>() {
     private val blogDao = BlogDao()
 
     fun onSetRating(blog: Blog, rating: Int) {
-        userDao.changeValue(blog, rating, Constants.BLOG_RATING)
-
         blogDao.appreciateBlog(blog, UserDao.getCurrentUserId(), rating).subscribeWithSchedulers(
             onComplete = { viewState.onRatingSuccess() },
             onError = { viewState.onError() }

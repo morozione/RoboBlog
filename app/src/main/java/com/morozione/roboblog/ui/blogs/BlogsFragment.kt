@@ -80,11 +80,11 @@ abstract class BlogsFragment : MvpAppCompatFragment() {
     protected fun setBlogs(blogs: List<Blog>, isLoading: Boolean) {
         hideProgress()
 
-        if (isLoading) {
-            adapter.addData(ArrayList(blogs))
-        } else {
+//        if (isLoading) {
+//            adapter.addData(ArrayList(blogs))
+//        } else {
             adapter.swapData(ArrayList(blogs))
-        }
+//        }
         
         // Show/hide empty state based on whether we have blogs
         updateEmptyState(adapter.itemCount == 0)

@@ -42,10 +42,15 @@ class EditUserPresenter : MvpBasePresenter<EditUserView>() {
             val imageUploadUtils = ImageUploadUtils(activity, compositeDisposable)
             val patchs = ArrayList<String>()
             patchs.add(imageUri.toString())
-            imageUploadUtils.uploadImages(patchs, newUser.id) { patchs1 ->
-                newUser.image = patchs1[0]
-                updateUser(newUser)
-            }
+            imageUploadUtils.uploadImages(
+                patchs, 
+                newUser.id,
+                onResult = { patchs1 ->
+                    newUser.image = patchs1[0]
+                    updateUser(newUser)
+                },
+                onError = { viewState.onError() }
+            )
         } else
             updateUser(newUser)
     }

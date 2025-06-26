@@ -17,10 +17,15 @@ class CreateBlogPresenter : MvpBasePresenter<CreateBlogView>() {
             val imageUploadUtils = ImageUploadUtils(activity, compositeDisposable)
             val patchs = ArrayList<String>()
             patchs.add(imageUri.toString())
-            imageUploadUtils.uploadImages(patchs, blog.id) { patchs1 ->
-                blog.icon = patchs1[0]
-                createBlog(blog)
-            }
+            imageUploadUtils.uploadImages(
+                patchs, 
+                blog.id,
+                onResult = { patchs1 ->
+                    blog.icon = patchs1[0]
+                    createBlog(blog)
+                },
+                onError = { viewState.onError() }
+            )
         } else {
             createBlog(blog)
         }

@@ -1,9 +1,6 @@
 package com.morozione.roboblog.database
 
 import com.google.firebase.Firebase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.morozione.roboblog.Constants
 import com.morozione.roboblog.entity.Blog
@@ -11,148 +8,100 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 
-class BlogDao {
+class BlogDao : BaseDao() {
     private val firebaseReference = Firebase.database.reference.child(Constants.DATABASE_BLOG)
 
-    fun create(blog: Blog): Completable = Completable.create { e ->
+    fun create(blog: Blog): Completable {
         val id = firebaseReference.push().key
-        blog.id = id!!
+            ?: return Completable.error(Exception("Failed to generate ID"))
+        blog.id = id
         blog.userId = UserDao.getCurrentUserId()
         blog.rating = 0
         blog.date = System.currentTimeMillis()
-        firebaseReference.child(id).setValue(blog).addOnCompleteListener {
-            if (it.isSuccessful) {
-                e.onComplete()
-            } else {
-                e.onError(Exception(it.exception.toString()))
+        return firebaseReference.child(id).asCompletable(blog)
+    }
+
+    fun update(blog: Blog): Completable {
+        return firebaseReference.child(blog.id).asCompletable(blog)
+    }
+
+    fun getBlogs(): Observable<List<Blog>> {
+        return firebaseReference.orderByChild("date").asRealtimeObservable { snapshot ->
+            val blogs = mutableListOf<Blog>()
+            for (child in snapshot.children) {
+                child.getValue(Blog::class.java)?.let { blog ->
+                    blog.id = child.key!!
+                    blogs.add(blog)
+                }
             }
-        }.addOnCanceledListener {
-            e.onError(Exception())
+            // Sort by date descending (newest first) and return the sorted list
+            blogs.sortByDescending { it.date }
+            blogs
+        }.share() // Share the Observable to avoid multiple Firebase listeners
+    }
+
+    fun getBlogsByUserId(userId: String): Observable<List<Blog>> = firebaseReference
+        .orderByChild(Constants.BLOG_USER_ID).equalTo(userId)
+        .asRealtimeObservable { snapshot ->
+            val blogs = mutableListOf<Blog>()
+            for (child in snapshot.children) {
+                child.getValue(Blog::class.java)?.let { blog ->
+                    blog.id = child.key!!
+                    blogs.add(blog)
+                }
+            }
+            // Sort by date descending (newest first)
+            blogs.sortByDescending { it.date }
+            blogs
+        }.share() // Share the Observable to avoid multiple Firebase listeners
+
+    fun getBlogsById(id: String): Single<Blog> = firebaseReference
+        .child(id).asSingle { snapshot ->
+            snapshot.getValue(Blog::class.java)?.apply {
+                this.id = snapshot.key ?: id
+            }
+        }
+
+    fun removeBlog(id: String): Completable {
+        return Completable.create { emitter ->
+            firebaseReference.child(id).removeValue()
+                .addOnSuccessListener { emitter.onComplete() }
+                .addOnFailureListener { emitter.onError(it) }
         }
     }
 
-    fun update(blog: Blog) = Completable.create { t ->
-        firebaseReference.child(blog.id).ref.setValue(blog)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    t.onComplete()
+    fun appreciateBlog(blog: Blog, userId: String, rating: Int): Completable {
+        val userDao = UserDao()
+        val blogRef = firebaseReference.child(blog.id)
+
+        var ratingDifference: Int = 0
+
+        return Completable.fromAction {
+            // Get the previous rating from this user (if any)
+            val previousRating = blog.getAppreciatedStatusByUser(userId) ?: 0
+            
+            // Calculate the difference
+            ratingDifference = rating - previousRating
+            
+            // Update the blog's appreciated peoples map
+            blog.appreciatedPeoples[userId] = rating
+            
+            // Update the blog's total rating
+            blog.rating += ratingDifference
+        }.andThen(
+            // Update the blog in Firebase with the new appreciation data
+            Completable.merge(listOf(
+                // Update the appreciatedPeoples field
+                blogRef.child("appreciatedPeoples").child(userId).asCompletable(rating),
+                // Update the blog's total rating
+                blogRef.child("rating").asCompletable(blog.rating),
+                // Update the blog author's rating (give them points for getting appreciation)
+                if (ratingDifference != 0) {
+                    userDao.changeValue(blog, ratingDifference, "rating")
                 } else {
-                    t.onError(Exception())
+                    Completable.complete()
                 }
-            }
-    }
-
-    fun getBlogs(): Observable<Blog> = Observable.create { e ->
-        firebaseReference.orderByChild("date")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val blogs = mutableListOf<Blog>()
-                    for (child in dataSnapshot.children) {
-                        val blog = child.getValue(Blog::class.java)
-                        blog?.let {
-                            blog.id = child.key!!
-                            blogs.add(blog)
-                        }
-                    }
-                    // Sort by date descending (newest first) since Firebase orderByChild returns ascending
-                    blogs.sortByDescending { it.date }
-                    
-                    // Emit sorted blogs
-                    for (blog in blogs) {
-                        e.onNext(blog)
-                    }
-                    e.onComplete()
-                }
-
-                override fun onCancelled(onError: DatabaseError) {
-                    e.onError(onError.toException())
-                }
-            })
-    }
-
-    fun getBlogsByUserId(userId: String): Observable<Blog> = Observable.create { e ->
-        firebaseReference.orderByChild(Constants.BLOG_USER_ID).equalTo(userId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val blogs = mutableListOf<Blog>()
-                    for (child in dataSnapshot.children) {
-                        val blog = child.getValue(Blog::class.java)
-                        blog?.let {
-                            blog.id = child.key!!
-                            blogs.add(blog)
-                        }
-                    }
-                    // Sort by date descending (newest first)
-                    blogs.sortByDescending { it.date }
-                    
-                    // Emit sorted blogs
-                    for (blog in blogs) {
-                        e.onNext(blog)
-                    }
-                    e.onComplete()
-                }
-
-                override fun onCancelled(onError: DatabaseError) {
-                    e.onError(onError.toException())
-                }
-            })
-    }
-
-    fun getBlogsById(id: String): Single<Blog> = Single.create { e ->
-        firebaseReference.orderByKey().equalTo(id)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    for (child in dataSnapshot.children) {
-                        val blog = child.getValue(Blog::class.java)
-                        blog?.let {
-                            e.onSuccess(blog)
-                        }
-                    }
-                }
-
-                override fun onCancelled(onError: DatabaseError) {
-                    e.onError(onError.toException())
-                }
-            })
-    }
-
-    fun removeBlog(id: String) = Completable.create { emitter ->
-        firebaseReference.orderByKey().equalTo(id)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    for (child in dataSnapshot.children) {
-//                        val blog = child.getValue(Blog::class.java)
-//                        blog?.appreciatedPeoples
-                        child.ref.removeValue().addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                emitter.onComplete()
-                            } else {
-                                emitter.onError(it.exception ?: Exception())
-                            }
-                        }
-                    }
-                }
-
-                override fun onCancelled(onError: DatabaseError) {
-                    emitter.onError(onError.toException())
-                }
-            })
-//            if (it.isSuccessful) {
-//                emitter.onComplete()
-//            } else {
-//                emitter.onError(it.exception ?: Exception())
-//            }
-    }
-
-    fun appreciateBlog(blog: Blog, userId: String, rating: Int) = Completable.create { emitter ->
-        blog.appreciatedPeoples[userId] = rating
-        firebaseReference.child(blog.id).ref.setValue(blog)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    emitter.onComplete()
-                } else {
-                    emitter.onError(it.exception ?: Exception())
-                }
-            }
+            ))
+        )
     }
 }

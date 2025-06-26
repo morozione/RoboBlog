@@ -26,8 +26,7 @@
             android:layout_marginRight="32dp"
             android:background="@drawable/edit_text_background"
             android:hint="@string/login"
-            android:padding="8dp"
-            android:text="aa@aa.aa" />
+            android:padding="8dp"/>
 
 
         <EditText
@@ -41,8 +40,7 @@
             android:background="@drawable/edit_text_background"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:padding="8dp"
-            android:text="123456" />
+            android:padding="8dp"/>
 
         <Button
             android:id="@+id/login"
